@@ -61,6 +61,21 @@
   button.send { width:100%; margin-top:10px; background:var(--ink); color:#fff; border:0; padding:15px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; }
   button.send:disabled { opacity:.35; cursor:not-allowed; }
   #falta { font-size:12.5px; color:#b06000; margin-top:8px; min-height:16px; }
+  .hitos { margin:10px 0 4px; display:flex; flex-direction:column; gap:8px; }
+  .hito { display:flex; gap:10px; align-items:center; padding:9px 10px; border-radius:10px; background:#f3f3ef; color:#666; font-size:13px; transition:all .25s; }
+  .hito .ic { font-size:22px; filter:grayscale(1); opacity:.55; transition:all .25s; }
+  .hito b { display:block; color:#333; }
+  .hito.ok { background:#e6f4ea; color:#14532d; box-shadow:0 0 0 1.5px var(--ok); }
+  .hito.ok .ic { filter:none; opacity:1; animation:pop .5s; }
+  .hito.ok b { color:#14532d; }
+  @keyframes pop { 0% { transform:scale(.4); } 60% { transform:scale(1.5); } 100% { transform:scale(1); } }
+  .small { font-size:11.5px; color:var(--mut); margin:2px 0 0; }
+  .extra { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; color:#444; }
+  .extra .g { color:var(--ok); font-weight:700; }
+  #mini { display:none; font-size:12px; color:#444; }
+  #toast { position:fixed; top:16px; left:50%; transform:translate(-50%,-120px); background:var(--ok); color:#fff; padding:13px 20px; border-radius:30px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:20; transition:transform .4s; text-align:center; max-width:92vw; }
+  #toast.show { transform:translate(-50%,0); }
+  #confeti { position:fixed; inset:0; pointer-events:none; z-index:19; }
   #mbar { display:none; }
   #ok { display:none; background:#fff; border:1px solid var(--ok); border-radius:12px; padding:24px; margin:18px auto; max-width:640px; }
   #ok h2 { color:var(--ok); margin-top:0; }
@@ -71,6 +86,8 @@
     aside { position:fixed; left:0; right:0; bottom:0; top:auto; border-radius:14px 14px 0 0; border:0; box-shadow:0 -6px 20px rgba(0,0,0,.18); z-index:5; padding:10px 14px 14px; }
     aside:not(.open) #lista, aside:not(.open) .meter, aside:not(.open) #aviso, aside:not(.open) #falta { display:none; }
     aside:not(.open) .tot { margin-top:0; font-size:20px; }
+    aside:not(.open) #mini { display:block; }
+    aside:not(.open) .hitos, aside:not(.open) .small, aside:not(.open) #extras { display:none; }
     aside h2 { cursor:pointer; margin-bottom:4px; }
     aside.open #lista { max-height:34vh; }
     #mbar { display:block; font-size:12px; color:var(--mut); }
@@ -118,14 +135,22 @@
   <aside id="resumen">
     <h2 id="cab">Tu pedido <span id="cuenta">0 productos</span></h2>
     <div id="lista"><div class="vacio">Aún no has elegido nada. Pulsa + en un producto.</div></div>
+    <div id="extras"></div>
     <div class="tot"><span>Total</span><span><span id="total">0,00 €</span> <small>+ IVA</small></span></div>
+    <div id="mini"></div>
     <div class="meter"><i id="meter"></i></div>
     <div id="aviso">Añade productos para empezar.</div>
+    <div class="hitos">
+      <div class="hito" id="h40"><span class="ic">🚚</span><div><b>Envío gratis</b><span id="t40">Desde 40 € en tu primer pedido</span></div></div>
+      <div class="hito" id="h80"><span class="ic">🎁</span><div><b>Ventilador de regalo</b><span id="t80">Desde 80 € en tu primer pedido</span></div></div>
+    </div>
+    <p class="small">Regalos de bienvenida: solo en el primer pedido y por tiempo limitado.</p>
     <button class="send" id="enviar" disabled>Enviar pedido</button>
     <div id="falta"></div>
   </aside>
 </div>
 
+<div id="toast"></div><canvas id="confeti"></canvas>
 <div id="ok">
   <h2>Pedido recibido</h2>
   <p>Gracias. En unos minutos te llega la <strong>proforma</strong> por email con los datos de la transferencia. En cuanto veamos el pago, te enviamos la factura en PDF y preparamos tu pedido. Cuando salga, te llega el número de seguimiento.</p>
@@ -192,18 +217,34 @@ function recalcula() {
       minOk = false; card.className = "card on"; linea.textContent = "Mínimo " + UMB[0] + " unidades en tarifa de distribuidor.";
     } else { card.className = "card"; linea.textContent = ""; }
   });
-  total = Math.round(total * 100) / 100;
+  var sub = Math.round(total * 100) / 100;
+  var gana40 = n > 0 && sub >= 40, gana80 = n > 0 && sub >= 80;
+  var portes = (n > 0 && !(gana40 || sub >= PORTES)) ? 6.90 : 0;
+  total = Math.round((sub + portes) * 100) / 100;
   $("lista").innerHTML = lista || "<div class='vacio'>Aún no has elegido nada. Pulsa + en un producto.</div>";
   $("cuenta").textContent = n + (n === 1 ? " producto" : " productos");
+  var ex = "";
+  if (n > 0) {
+    ex += portes > 0 ? "<div class='extra'><span>Portes de envío</span><span>" + fmt(portes) + "</span></div>" : "<div class='extra'><span>🚚 Envío</span><span class='g'>GRATIS ✓</span></div>";
+    if (gana80) { ex += "<div class='extra'><span>🎁 Ventilador de coche</span><span class='g'>REGALO ✓</span></div>"; }
+  }
+  $("extras").innerHTML = ex;
   $("total").textContent = fmt(total);
-  var aviso, meta;
-  if (n === 0) { aviso = "Añade productos para empezar."; meta = 0; }
-  else if (total < 40) { aviso = "Te faltan " + fmt(40 - total) + " para el envío gratis de bienvenida (primer pedido)."; meta = total / 80; }
-  else if (total < 80) { aviso = "✓ Envío gratis. Te faltan " + fmt(80 - total) + " para un ventilador de regalo (primer pedido)."; meta = total / 80; }
-  else if (total < PORTES) { aviso = "✓ Envío gratis y ✓ ventilador de regalo en tu primer pedido. Portes gratis siempre desde " + fmt(PORTES) + "."; meta = 1; }
-  else { aviso = "✓ Portes gratis conseguidos."; meta = 1; }
-  $("aviso").textContent = aviso; $("meter").style.width = Math.min(100, meta * 100) + "%";
-  window.__t = total; window.__n = n; window.__min = minOk;
+  var hito = function (id, tid, ok, falta, base) { $(id).className = "hito" + (ok ? " ok" : ""); $(tid).textContent = ok ? "¡Conseguido!" : (n > 0 ? "Te faltan " + fmt(falta) : base); };
+  hito("h40", "t40", gana40, 40 - sub, "Desde 40 € en tu primer pedido");
+  hito("h80", "t80", gana80, 80 - sub, "Desde 80 € en tu primer pedido");
+  var aviso;
+  if (n === 0) { aviso = "Añade productos para empezar."; }
+  else if (!gana40) { aviso = "Te faltan " + fmt(40 - sub) + " para el envío gratis de bienvenida."; }
+  else if (!gana80) { aviso = "✓ Envío gratis conseguido. Te faltan " + fmt(80 - sub) + " para un ventilador de regalo."; }
+  else { aviso = "✓ Envío gratis y ✓ ventilador de regalo conseguidos."; }
+  $("aviso").textContent = aviso;
+  $("meter").style.width = Math.min(100, sub / 80 * 100) + "%";
+  $("mini").textContent = n === 0 ? "" : ("🚚 " + (gana40 ? "✓" : "faltan " + fmt(40 - sub)) + "  ·  🎁 " + (gana80 ? "✓" : "faltan " + fmt(80 - sub)));
+  if (gana40 && !window.__g40) { celebra("¡Envío gratis conseguido! 🚚"); }
+  if (gana80 && !window.__g80) { celebra("¡Ventilador de regalo conseguido! 🎁"); }
+  window.__g40 = gana40; window.__g80 = gana80;
+  window.__t = sub; window.__n = n; window.__min = minOk;
   valida();
 }
 
@@ -242,6 +283,21 @@ $("enviar").addEventListener("click", function () {
     .then(function () { $("form").style.display = "none"; $("ok").style.display = "block"; document.querySelector(".steps").style.display = "none"; window.scrollTo(0, 0); })
     .catch(function () { err.textContent = "No hemos podido enviar el pedido. Escríbenos por WhatsApp al +34 623 82 88 00 y lo gestionamos enseguida."; $("resumen").classList.add("open"); btn.disabled = false; btn.textContent = "Enviar pedido"; });
 });
+
+function celebra(msg) {
+  var t = $("toast"); t.textContent = msg; t.className = "show";
+  clearTimeout(window.__tt); window.__tt = setTimeout(function () { t.className = ""; }, 2800);
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  var c = $("confeti"), x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
+  var col = ["#1f7a3d", "#f5b301", "#e5484d", "#2563eb", "#9333ea", "#1a1a1a"], ps = [];
+  for (var i = 0; i < 130; i++) { ps.push({ x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35, vx: (Math.random() - .5) * 13, vy: -Math.random() * 13 - 3, s: 5 + Math.random() * 6, c: col[i % col.length], r: Math.random() * 6, vr: (Math.random() - .5) * .4 }); }
+  var t0 = Date.now();
+  (function paso() {
+    var e = Date.now() - t0; x.clearRect(0, 0, c.width, c.height);
+    ps.forEach(function (p) { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - e / 2200); x.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); x.restore(); });
+    if (e < 2200) { requestAnimationFrame(paso); } else { x.clearRect(0, 0, c.width, c.height); }
+  })();
+}
 
 pinta(); recalcula();
 </script>
