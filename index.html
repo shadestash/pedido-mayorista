@@ -73,7 +73,9 @@
   .extra { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; color:#444; }
   .extra .g { color:var(--ok); font-weight:700; }
   #mini { display:none; font-size:12px; color:#444; }
-  #toast { position:fixed; top:16px; left:50%; transform:translate(-50%,-120px); background:var(--ok); color:#fff; padding:13px 20px; border-radius:30px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:20; transition:transform .4s; text-align:center; max-width:92vw; }
+  #toast { position:fixed; top:14px; left:50%; transform:translate(-50%,-160px); background:var(--ink); color:#fff; padding:14px 22px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.3); z-index:20; transition:transform .45s cubic-bezier(.2,1.3,.4,1); text-align:center; width:min(92vw,460px); }
+  #toast b { display:block; font-size:19px; line-height:1.25; }
+  #toast span { display:block; font-size:14px; margin-top:4px; color:#e8e8e4; }
   #toast.show { transform:translate(-50%,0); }
   #confeti { position:fixed; inset:0; pointer-events:none; z-index:19; }
   #mbar { display:none; }
@@ -243,8 +245,8 @@ function recalcula() {
   $("aviso").textContent = aviso;
   $("meter").style.width = Math.min(100, sub / 80 * 100) + "%";
   $("mini").textContent = n === 0 ? "" : ("🚚 " + (gana40 ? "✓" : "faltan " + fmt(40 - sub)) + "  ·  🎁 " + (gana80 ? "✓" : "faltan " + fmt(80 - sub)));
-  if (gana40 && !window.__g40) { celebra(DIST ? "¡Envío gratis conseguido!" : "¡Envío gratis! Te ahorras " + fmt(6.90) + ": invita tú a un par de cañas este finde 🍻", DIST ? "" : "🍻"); }
-  if (gana80 && !window.__g80) { celebra(DIST ? "¡Ventilador de regalo conseguido!" : "¡Ventilador de regalo! Con lo que ahorras, una peli este finde 🎬🍿", DIST ? "" : "🎬🍿"); }
+  if (gana40 && !window.__g40) { if (DIST) { celebra("¡Envío gratis conseguido!", "", ""); } else { celebra("¡Me he ganado unas cañas! 🍻", "Envío gratis: " + fmt(6.90) + " que se quedan en tu bolsillo. Esto se celebra.", "🍻"); } }
+  if (gana80 && !window.__g80) { if (DIST) { celebra("¡Ventilador de regalo conseguido!", "", ""); } else { celebra("¡Cine pagado, y con palomitas! 🎬", "Ventilador de regalo + envío gratis: lo ahorrado da para la peli del finde.", "🎬🍿"); } }
   window.__g40 = gana40; window.__g80 = gana80;
   window.__t = sub; window.__n = n; window.__min = minOk;
   valida();
@@ -286,21 +288,26 @@ $("enviar").addEventListener("click", function () {
     .catch(function () { err.textContent = "No hemos podido enviar el pedido. Escríbenos por WhatsApp al +34 623 82 88 00 y lo gestionamos enseguida."; $("resumen").classList.add("open"); btn.disabled = false; btn.textContent = "Enviar pedido"; });
 });
 
-function celebra(msg, emo) {
-  var t = $("toast"); t.textContent = msg; t.className = "show";
-  clearTimeout(window.__tt); window.__tt = setTimeout(function () { t.className = ""; }, 2800);
+function celebra(titulo, sub, emo) {
+  var t = $("toast"); t.innerHTML = "<b>" + titulo + "</b>" + (sub ? "<span>" + sub + "</span>" : ""); t.className = "show";
+  clearTimeout(window.__tt); window.__tt = setTimeout(function () { t.className = ""; }, 7000);
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
   var c = $("confeti"), x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
-  var col = ["#1f7a3d", "#f5b301", "#e5484d", "#2563eb", "#9333ea", "#1a1a1a"], ps = [];
-  for (var i = 0; i < 130; i++) { ps.push({ x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35, vx: (Math.random() - .5) * 13, vy: -Math.random() * 13 - 3, s: 5 + Math.random() * 6, c: col[i % col.length], r: Math.random() * 6, vr: (Math.random() - .5) * .4 }); }
-  var em = [];
-  if (emo) { var arr = Array.from(emo); for (var j = 0; j < 22; j++) { em.push({ x: Math.random() * innerWidth, y: innerHeight + 20, vy: -(3 + Math.random() * 4), a: arr[j % arr.length], s: 22 + Math.random() * 18, ph: Math.random() * 6 }); } }
-  var t0 = Date.now();
+  var ps = [], t0 = Date.now(), DUR = 4200;
+  if (emo) {
+    var arr = Array.from(emo);
+    for (var i = 0; i < 26; i++) { ps.push({ a: arr[i % arr.length], x: Math.random() * innerWidth, y: -40 - Math.random() * innerHeight * .9, vy: 2.2 + Math.random() * 2.6, s: 30 + Math.random() * 26, ph: Math.random() * 6, sw: .6 + Math.random() * 1.2 }); }
+  } else {
+    var col = ["#1f7a3d", "#f5b301", "#e5484d", "#2563eb", "#9333ea", "#1a1a1a"];
+    for (var k = 0; k < 110; k++) { ps.push({ c: col[k % col.length], x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35, vx: (Math.random() - .5) * 13, vy: -Math.random() * 13 - 3, s: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .4 }); }
+  }
   (function paso() {
     var e = Date.now() - t0; x.clearRect(0, 0, c.width, c.height);
-    ps.forEach(function (p) { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - e / 2200); x.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); x.restore(); });
-    em.forEach(function (m) { m.y += m.vy; m.x += Math.sin((e / 300) + m.ph) * 1.2; x.globalAlpha = Math.max(0, 1 - e / 2600); x.font = m.s + 'px sans-serif'; x.fillText(m.a, m.x, m.y); });
-    if (e < 2600) { requestAnimationFrame(paso); } else { x.clearRect(0, 0, c.width, c.height); }
+    ps.forEach(function (p) {
+      if (p.a) { p.y += p.vy; p.x += Math.sin(e / 400 + p.ph) * p.sw; x.globalAlpha = e > DUR - 900 ? Math.max(0, (DUR - e) / 900) : 1; x.font = p.s + "px sans-serif"; x.fillText(p.a, p.x, p.y); }
+      else { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - e / 2200); x.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); x.restore(); }
+    });
+    if (e < DUR) { requestAnimationFrame(paso); } else { x.clearRect(0, 0, c.width, c.height); }
   })();
 }
 
