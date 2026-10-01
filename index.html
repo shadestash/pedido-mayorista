@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Pedido mayorista · Invisible Stash</title>
+<title>Carrito B2B · Invisible Stash</title>
+<link rel="icon" href="img/favicon.png">
 <style>
   :root { --ink:#1a1a1a; --bg:#f4f4f2; --card:#fff; --line:#e3e3df; --mut:#777; --ok:#1f7a3d; --acc:#1f7a3d; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:#222; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:1.45; }
-  header { background:var(--ink); color:#fff; padding:16px 20px; letter-spacing:3px; font-weight:700; font-size:18px; }
-  header small { display:block; letter-spacing:0; font-weight:400; font-size:13px; color:#cfcfcf; margin-top:2px; }
+  header { background:#fff; border-bottom:3px solid #ff9100; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+  header img { height:46px; width:auto; display:block; }
+  header small { margin-left:auto; text-align:right; font-size:12.5px; color:#555; line-height:1.3; }
   .steps { display:flex; gap:8px; max-width:1100px; margin:14px auto 0; padding:0 16px; }
   .step { flex:1; background:#e9e9e5; border-radius:8px; padding:9px 10px; font-size:13px; color:#666; display:flex; gap:8px; align-items:center; }
   .step b { display:inline-flex; width:22px; height:22px; border-radius:50%; background:#cfcfca; color:#fff; align-items:center; justify-content:center; font-size:12px; flex:none; }
@@ -20,9 +22,10 @@
   .wrap { max-width:1100px; margin:0 auto; padding:14px 16px 120px; display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
   h1 { font-size:21px; margin:6px 0 2px; }
   p.sub { color:var(--mut); margin:0 0 14px; font-size:14px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px; transition:box-shadow .15s, border-color .15s; }
   .card.on { border-color:var(--ink); box-shadow:0 0 0 1.5px var(--ink); }
+  .card .ph { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; background:#efe9e0; display:block; }
   .card h3 { margin:0; font-size:16px; }
   .card .d { color:var(--mut); font-size:12.5px; min-height:34px; }
   .price { font-size:22px; font-weight:700; } .price small { font-size:12px; font-weight:400; color:var(--mut); }
@@ -94,12 +97,17 @@
     aside.open #lista { max-height:34vh; }
     #mbar { display:block; font-size:12px; color:var(--mut); }
     .row2 { grid-template-columns:1fr; }
+    .grid { grid-template-columns:1fr; }
+    .card { display:grid; grid-template-columns:96px 1fr; column-gap:12px; align-items:start; }
+    .card .ph { grid-row:1 / span 3; width:96px; height:96px; }
+    .card .qty, .card .line, .card .chips { grid-column:1 / -1; }
+    .card .d { min-height:0; }
     .steps .step span { display:none; } .steps .step.act span { display:inline; }
   }
 </style>
 </head>
 <body>
-<header>INVISIBLE STASH<small>Pedido mayorista · sin pedido mínimo · envío discreto</small></header>
+<header><img src="img/logo.png" alt="Invisible Stash"><small>Carrito B2B · sin pedido mínimo<br>envío discreto</small></header>
 <div class="steps">
   <div class="step act" id="s1"><b>1</b><span>Elige tus productos</span></div>
   <div class="step" id="s2"><b>2</b><span>Tus datos</span></div>
@@ -165,14 +173,14 @@ var WEBHOOK = "https://shade-stash-automatizacion-n8n.jpexyl.easypanel.host/webh
 var T_TIENDA = [1, 48, 144];
 var T_DIST = [48, 144, 500];
 var PRODUCTOS = [
-  { id: "mechero", n: "Mechero", d: "Objeto cotidiano con compartimento oculto.", t: [4.50, 4.20, 3.90], dist: [3.50, 3.20, 3.00] },
-  { id: "llave", n: "Llave de coche con fresado real", d: "Fresado real en la pieza metálica. Pieza decorativa con compartimento oculto.", t: [6.20, 5.90, 5.60], dist: [4.80, 4.50, 4.20] },
-  { id: "desodorante", n: "Desodorante básico", d: "Envase de apariencia real con compartimento oculto. Surtido de marcas.", t: [9.90, 9.40, 8.90], dist: [7.00, 6.50, 6.00] },
-  { id: "sanex", n: "Desodorante Premium Sanex 50 ml", d: "Marca Sanex, detalle de realismo con depósito. Compartimento oculto.", t: [13.95, 13.50, 12.90], dist: [9.50, 9.00, 8.50] },
-  { id: "rotulador", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: null },
-  { id: "ventilador", n: "Ventilador de coche", d: "Novedad difícil de encontrar. Compartimento oculto.", t: [6.50, 6.20, 5.90], dist: [4.50, 4.20, 4.00] },
-  { id: "pintalabios", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: null },
-  { id: "vaporizador", n: "Vaporizador decorativo Premium", d: "Acabado premium. Compartimento oculto.", t: [14.00, 13.50, 13.00], dist: [12.40, 12.30, 12.20] }
+  { id: "mechero", img: "img/mechero.jpg", n: "Mechero", d: "Objeto cotidiano con compartimento oculto.", t: [4.50, 4.20, 3.90], dist: [3.50, 3.20, 3.00] },
+  { id: "llave", img: "img/llave.jpg", n: "Llave de coche con fresado real", d: "Fresado real en la pieza metálica. Pieza decorativa con compartimento oculto.", t: [6.20, 5.90, 5.60], dist: [4.80, 4.50, 4.20] },
+  { id: "desodorante", img: "img/desodorante.jpg", n: "Desodorante básico", d: "Envase de apariencia real con compartimento oculto. Surtido de marcas.", t: [9.90, 9.40, 8.90], dist: [7.00, 6.50, 6.00] },
+  { id: "sanex", img: "img/sanex.jpg", n: "Desodorante Premium Sanex 50 ml", d: "Marca Sanex, detalle de realismo con depósito. Compartimento oculto.", t: [13.95, 13.50, 12.90], dist: [9.50, 9.00, 8.50] },
+  { id: "rotulador", img: "img/rotulador.jpg", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: null },
+  { id: "ventilador", img: "img/ventilador.jpg", n: "Ventilador de coche", d: "Novedad difícil de encontrar. Compartimento oculto.", t: [6.50, 6.20, 5.90], dist: [4.50, 4.20, 4.00] },
+  { id: "pintalabios", img: "img/pintalabios.jpg", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: null },
+  { id: "vaporizador", img: "img/vaporizador.jpg", n: "Vaporizador decorativo Premium", d: "Acabado premium. Compartimento oculto.", t: [14.00, 13.50, 13.00], dist: [12.40, 12.30, 12.20] }
 ];
 var qs = new URLSearchParams(location.search);
 var DIST = qs.get("t") === "d";
@@ -193,10 +201,10 @@ function pinta() {
   PRODUCTOS.forEach(function (p) {
     var precios = pr(p), div = document.createElement("div");
     div.className = "card"; div.id = "c_" + p.id;
-    if (!precios) { div.innerHTML = "<h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.</div>"; cont.appendChild(div); return; }
+    if (!precios) { div.innerHTML = "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.</div>"; cont.appendChild(div); return; }
     var chips = precios.map(function (v, i) { return "<span class='chip' id='t_" + p.id + "_" + i + "'>" + RANGOS[i] + " uds · " + fmt(v) + "</span>"; }).join("");
     var rap = (DIST ? [48, 144, 500] : [12, 48, 144]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
-    div.innerHTML = "<h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
+    div.innerHTML = "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
       "<div class='qty'><button type='button' class='pm' data-id='" + p.id + "' data-d='-1' aria-label='Quitar uno'>−</button><input type='number' min='0' inputmode='numeric' id='q_" + p.id + "' value='0'><button type='button' class='pm' data-id='" + p.id + "' data-d='1' aria-label='Añadir uno'>+</button><div class='quick'>" + rap + "</div></div><div class='line' id='l_" + p.id + "'></div>";
     cont.appendChild(div);
   });
