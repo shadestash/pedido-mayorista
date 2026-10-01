@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Reclamación · Invisible Stash</title>
+<link rel="icon" href="img/favicon.png">
+<style>
+  :root { --ink:#1a1a1a; --bg:#f4f4f2; --line:#e3e3df; --mut:#777; --ok:#1f7a3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:#222; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:1.5; }
+  header { background:#fff; border-bottom:3px solid #ff9100; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+  header img { height:46px; width:auto; display:block; }
+  header small { margin-left:auto; text-align:right; font-size:12.5px; color:#555; line-height:1.3; }
+  main { max-width:640px; margin:0 auto; padding:18px 16px 60px; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--mut); margin:0 0 16px; }
+  section { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:14px; }
+  section h2 { margin:0 0 6px; font-size:16px; }
+  label.t { display:block; font-size:13px; color:#444; margin:12px 0 4px; }
+  input[type=text], input[type=email], input[type=number], select, textarea { width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:inherit; background:#fff; }
+  input:focus, select:focus, textarea:focus { outline:2px solid var(--ink); border-color:var(--ink); }
+  .op { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
+  .op label { flex:1; min-width:120px; border:1.5px solid var(--line); border-radius:10px; padding:11px 12px; cursor:pointer; background:#fff; }
+  .op input { margin-right:8px; }
+  .op label.sel { border-color:var(--ink); background:#f6f6f3; }
+  .q { margin-top:12px; font-size:14px; }
+  .q b { display:block; margin-bottom:2px; }
+  #previas { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; margin-top:8px; }
+  #previas div { position:relative; aspect-ratio:1/1; border-radius:8px; overflow:hidden; background:#eee; }
+  #previas img { width:100%; height:100%; object-fit:cover; display:block; }
+  #previas button { position:absolute; top:4px; right:4px; width:26px; height:26px; border:0; border-radius:50%; background:rgba(0,0,0,.65); color:#fff; cursor:pointer; }
+  .subir { display:block; margin-top:6px; padding:14px; text-align:center; border:2px dashed #bbb; border-radius:10px; background:#fafafa; cursor:pointer; font-weight:700; }
+  .hp { position:absolute; left:-9999px; opacity:0; height:0; }
+  button.enviar { width:100%; margin-top:16px; background:var(--ink); color:#fff; border:0; padding:15px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; }
+  button.enviar:disabled { opacity:.4; cursor:not-allowed; }
+  #err { color:#b00020; font-size:13px; margin-top:10px; min-height:18px; }
+  #ok { display:none; background:#fff; border:1px solid var(--ok); border-radius:12px; padding:24px; margin-top:18px; }
+  #ok h2 { color:var(--ok); margin-top:0; }
+  .foot { color:var(--mut); font-size:12.5px; margin-top:14px; }
+</style>
+</head>
+<body>
+<header><img src="img/logo.png" alt="Invisible Stash"><small>Reclamación de pedido<br>te respondemos en breve</small></header>
+<main>
+  <div id="form">
+    <h1>Lo sentimos mucho</h1>
+    <p class="sub">Cuéntanos qué ha pasado y súbenos fotos. Lo revisa Isaac personalmente y buscamos la solución más rápida.</p>
+
+    <section>
+      <h2>Tu pedido</h2>
+      <label class="t" for="pedido">Número de pedido o de factura *</label>
+      <input type="text" id="pedido" placeholder="PF-20261001-120000 o FA-20261001-120000">
+      <label class="t" for="email">Email con el que hiciste el pedido *</label>
+      <input type="email" id="email" autocomplete="email">
+      <label class="t" for="producto">Producto afectado *</label>
+      <select id="producto">
+        <option value="">Elige un producto</option>
+        <option value="mechero">Mechero</option>
+        <option value="llave">Llave de coche con fresado real</option>
+        <option value="desodorante">Desodorante básico</option>
+        <option value="sanex">Desodorante Premium Sanex</option>
+        <option value="rotulador">Rotulador</option>
+        <option value="ventilador">Ventilador de coche</option>
+        <option value="pintalabios">Pintalabios</option>
+        <option value="vaporizador">Vaporizador decorativo Premium</option>
+      </select>
+      <label class="t" for="unidades">¿Cuántas unidades están afectadas? *</label>
+      <input type="number" id="unidades" min="1" max="500" inputmode="numeric" value="1">
+    </section>
+
+    <section>
+      <h2>Qué ha pasado</h2>
+      <label class="t" for="descripcion">Cuéntanoslo con tus palabras *</label>
+      <textarea id="descripcion" rows="3" placeholder="Por ejemplo: la tapa llegó partida"></textarea>
+      <div class="q"><b>¿El paquete llegó golpeado o abierto? *</b>
+        <div class="op" data-name="golpeado"><label><input type="radio" name="golpeado" value="si">Sí</label><label><input type="radio" name="golpeado" value="no">No</label></div></div>
+      <div class="q"><b>¿El producto ya estaba roto al abrirlo? *</b>
+        <div class="op" data-name="roto"><label><input type="radio" name="roto" value="si">Sí</label><label><input type="radio" name="roto" value="no">No</label></div></div>
+      <div class="q"><b>¿Se ha usado como muestra o expositor en tienda? *</b>
+        <div class="op" data-name="muestra"><label><input type="radio" name="muestra" value="si">Sí</label><label><input type="radio" name="muestra" value="no">No</label></div></div>
+    </section>
+
+    <section>
+      <h2>Fotos (de 1 a 4) *</h2>
+      <p class="foot" style="margin-top:0">Que se vea bien el daño y, si puedes, también el paquete y su embalaje.</p>
+      <label class="subir" for="fotos">📷 Añadir fotos</label>
+      <input type="file" id="fotos" accept="image/*" multiple style="display:none">
+      <div id="previas"></div>
+    </section>
+
+    <section>
+      <h2>Qué solución prefieres</h2>
+      <div class="op" data-name="pref">
+        <label><input type="radio" name="pref" value="reembolso"><b>Reembolso</b><br><span style="font-size:13px;color:#555">Te devolvemos el importe</span></label>
+        <label><input type="radio" name="pref" value="reposicion"><b>Unidad nueva</b><br><span style="font-size:13px;color:#555">Te la enviamos sin coste</span></label>
+        <label><input type="radio" name="pref" value="credito"><b>Crédito</b><br><span style="font-size:13px;color:#555">Gratis en tu próximo pedido</span></label>
+      </div>
+      <div id="bloqueIban" style="display:none">
+        <label class="t" for="iban">IBAN donde quieres recibir el reembolso *</label>
+        <input type="text" id="iban" placeholder="ES00 0000 0000 0000 0000 0000" autocomplete="off">
+      </div>
+    </section>
+
+    <div class="hp"><label>No rellenar</label><input type="text" id="web" tabindex="-1" autocomplete="off"></div>
+    <div id="err"></div>
+    <button class="enviar" id="enviar">Enviar reclamación</button>
+    <p class="foot">¿Prefieres hablar directamente? WhatsApp +34 623 82 88 00.</p>
+  </div>
+
+  <div id="ok">
+    <h2>Reclamación recibida</h2>
+    <p>Gracias por avisarnos y por las fotos. Isaac las revisa personalmente y te responde por email en breve con la solución.</p>
+    <p class="foot">¿Algo urgente? <a href="https://wa.me/34623828800?text=Hola%20Isaac%2C%20te%20escribo%20sobre%20mi%20reclamaci%C3%B3n.">Escríbenos por WhatsApp</a>.</p>
+  </div>
+</main>
+
+<script>
+var WEBHOOK = "https://shade-stash-automatizacion-n8n.jpexyl.easypanel.host/webhook/reclamacion";
+var $ = function (id) { return document.getElementById(id); };
+var fotos = [];
+var qs = new URLSearchParams(location.search);
+if (qs.get("p")) { $("pedido").value = qs.get("p"); }
+if (qs.get("e")) { $("email").value = qs.get("e"); }
+
+document.addEventListener("change", function (e) {
+  if (e.target.type === "radio") {
+    var grupo = e.target.closest(".op");
+    if (grupo) { grupo.querySelectorAll("label").forEach(function (l) { l.classList.toggle("sel", l.querySelector("input").checked); }); }
+    if (e.target.name === "pref") { $("bloqueIban").style.display = (e.target.value === "reembolso") ? "block" : "none"; }
+  }
+});
+
+function reducir(file) {
+  return new Promise(function (resolve) {
+    var img = new Image(), url = URL.createObjectURL(file);
+    img.onload = function () {
+      var max = 1280, w = img.width, h = img.height, k = Math.min(1, max / Math.max(w, h));
+      var c = document.createElement("canvas"); c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(function (b) { URL.revokeObjectURL(url); resolve(b); }, "image/jpeg", 0.8);
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+function pintaPrevias() {
+  var cont = $("previas"); cont.innerHTML = "";
+  fotos.forEach(function (b, i) {
+    var d = document.createElement("div"), im = document.createElement("img"), x = document.createElement("button");
+    im.src = URL.createObjectURL(b); x.type = "button"; x.textContent = "×"; x.onclick = function () { fotos.splice(i, 1); pintaPrevias(); };
+    d.appendChild(im); d.appendChild(x); cont.appendChild(d);
+  });
+}
+
+$("fotos").addEventListener("change", function () {
+  var lista = Array.prototype.slice.call(this.files), self = this;
+  Promise.all(lista.map(reducir)).then(function (bs) {
+    bs.forEach(function (b) { if (b && fotos.length < 4) { fotos.push(b); } });
+    pintaPrevias(); self.value = "";
+  });
+});
+
+function valor(n) { var r = document.querySelector("input[name=" + n + "]:checked"); return r ? r.value : ""; }
+
+$("enviar").addEventListener("click", function () {
+  var btn = this, err = $("err"); err.textContent = "";
+  var falta = [];
+  if (!$("pedido").value.trim()) { falta.push("el número de pedido"); }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("email").value.trim())) { falta.push("un email válido"); }
+  if (!$("producto").value) { falta.push("el producto"); }
+  if (!($("unidades").value > 0)) { falta.push("las unidades"); }
+  if ($("descripcion").value.trim().length < 5) { falta.push("qué ha pasado"); }
+  if (!valor("golpeado") || !valor("roto") || !valor("muestra")) { falta.push("las tres preguntas"); }
+  if (fotos.length === 0) { falta.push("al menos una foto"); }
+  if (!valor("pref")) { falta.push("la solución que prefieres"); }
+  if (valor("pref") === "reembolso" && $("iban").value.replace(/\s/g, "").length < 15) { falta.push("el IBAN"); }
+  if (falta.length) { err.textContent = "Falta: " + falta.join(", ") + "."; return; }
+  if ($("web").value) { return; }
+  var fd = new FormData();
+  fd.append("pedido", $("pedido").value.trim()); fd.append("email", $("email").value.trim());
+  fd.append("producto", $("producto").value); fd.append("unidades", $("unidades").value);
+  fd.append("descripcion", $("descripcion").value.trim());
+  fd.append("golpeado", valor("golpeado")); fd.append("roto_al_abrir", valor("roto")); fd.append("usado_muestra", valor("muestra"));
+  fd.append("preferencia", valor("pref")); fd.append("iban", valor("pref") === "reembolso" ? $("iban").value.trim() : "");
+  fd.append("web", "");
+  fotos.forEach(function (b, i) { fd.append("foto" + i, b, "foto" + i + ".jpg"); });
+  btn.disabled = true; btn.textContent = "Enviando…";
+  fetch(WEBHOOK, { method: "POST", body: fd })
+    .then(function (r) { if (!r.ok) { throw new Error("http"); } })
+    .then(function () { $("form").style.display = "none"; $("ok").style.display = "block"; window.scrollTo(0, 0); })
+    .catch(function () { err.textContent = "No hemos podido enviar la reclamación. Escríbenos por WhatsApp al +34 623 82 88 00 y lo gestionamos enseguida."; btn.disabled = false; btn.textContent = "Enviar reclamación"; });
+});
+</script>
+</body>
+</html>
