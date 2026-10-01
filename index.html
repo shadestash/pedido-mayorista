@@ -227,6 +227,8 @@ function recalcula() {
   if (n > 0) {
     ex += portes > 0 ? "<div class='extra'><span>Portes de envío</span><span>" + fmt(portes) + "</span></div>" : "<div class='extra'><span>🚚 Envío</span><span class='g'>GRATIS ✓</span></div>";
     if (gana80) { ex += "<div class='extra'><span>🎁 Ventilador de coche</span><span class='g'>REGALO ✓</span></div>"; }
+    var ahorro = (gana40 && sub < PORTES ? 6.90 : 0) + (gana80 ? 6.50 : 0);
+    if (ahorro > 0) { ex += "<div class='extra'><span>Te estás ahorrando</span><span class='g'>" + fmt(ahorro) + (DIST ? "" : (gana80 ? " · 🎬" : " · 🍻")) + "</span></div>"; }
   }
   $("extras").innerHTML = ex;
   $("total").textContent = fmt(total);
@@ -241,8 +243,8 @@ function recalcula() {
   $("aviso").textContent = aviso;
   $("meter").style.width = Math.min(100, sub / 80 * 100) + "%";
   $("mini").textContent = n === 0 ? "" : ("🚚 " + (gana40 ? "✓" : "faltan " + fmt(40 - sub)) + "  ·  🎁 " + (gana80 ? "✓" : "faltan " + fmt(80 - sub)));
-  if (gana40 && !window.__g40) { celebra("¡Envío gratis conseguido! 🚚"); }
-  if (gana80 && !window.__g80) { celebra("¡Ventilador de regalo conseguido! 🎁"); }
+  if (gana40 && !window.__g40) { celebra(DIST ? "¡Envío gratis conseguido!" : "¡Envío gratis! Te ahorras " + fmt(6.90) + ": invita tú a un par de cañas este finde 🍻", DIST ? "" : "🍻"); }
+  if (gana80 && !window.__g80) { celebra(DIST ? "¡Ventilador de regalo conseguido!" : "¡Ventilador de regalo! Con lo que ahorras, una peli este finde 🎬🍿", DIST ? "" : "🎬🍿"); }
   window.__g40 = gana40; window.__g80 = gana80;
   window.__t = sub; window.__n = n; window.__min = minOk;
   valida();
@@ -284,18 +286,21 @@ $("enviar").addEventListener("click", function () {
     .catch(function () { err.textContent = "No hemos podido enviar el pedido. Escríbenos por WhatsApp al +34 623 82 88 00 y lo gestionamos enseguida."; $("resumen").classList.add("open"); btn.disabled = false; btn.textContent = "Enviar pedido"; });
 });
 
-function celebra(msg) {
+function celebra(msg, emo) {
   var t = $("toast"); t.textContent = msg; t.className = "show";
   clearTimeout(window.__tt); window.__tt = setTimeout(function () { t.className = ""; }, 2800);
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
   var c = $("confeti"), x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
   var col = ["#1f7a3d", "#f5b301", "#e5484d", "#2563eb", "#9333ea", "#1a1a1a"], ps = [];
   for (var i = 0; i < 130; i++) { ps.push({ x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35, vx: (Math.random() - .5) * 13, vy: -Math.random() * 13 - 3, s: 5 + Math.random() * 6, c: col[i % col.length], r: Math.random() * 6, vr: (Math.random() - .5) * .4 }); }
+  var em = [];
+  if (emo) { var arr = Array.from(emo); for (var j = 0; j < 22; j++) { em.push({ x: Math.random() * innerWidth, y: innerHeight + 20, vy: -(3 + Math.random() * 4), a: arr[j % arr.length], s: 22 + Math.random() * 18, ph: Math.random() * 6 }); } }
   var t0 = Date.now();
   (function paso() {
     var e = Date.now() - t0; x.clearRect(0, 0, c.width, c.height);
     ps.forEach(function (p) { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - e / 2200); x.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); x.restore(); });
-    if (e < 2200) { requestAnimationFrame(paso); } else { x.clearRect(0, 0, c.width, c.height); }
+    em.forEach(function (m) { m.y += m.vy; m.x += Math.sin((e / 300) + m.ph) * 1.2; x.globalAlpha = Math.max(0, 1 - e / 2600); x.font = m.s + 'px sans-serif'; x.fillText(m.a, m.x, m.y); });
+    if (e < 2600) { requestAnimationFrame(paso); } else { x.clearRect(0, 0, c.width, c.height); }
   })();
 }
 
