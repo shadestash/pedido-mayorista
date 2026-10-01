@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pedido mayorista · Invisible Stash</title>
+<style>
+  :root { --ink:#1a1a1a; --bg:#f4f4f2; --card:#fff; --line:#e3e3df; --mut:#777; --ok:#1f7a3d; --acc:#1f7a3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:#222; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:1.45; }
+  header { background:var(--ink); color:#fff; padding:16px 20px; letter-spacing:3px; font-weight:700; font-size:18px; }
+  header small { display:block; letter-spacing:0; font-weight:400; font-size:13px; color:#cfcfcf; margin-top:2px; }
+  .steps { display:flex; gap:8px; max-width:1100px; margin:14px auto 0; padding:0 16px; }
+  .step { flex:1; background:#e9e9e5; border-radius:8px; padding:9px 10px; font-size:13px; color:#666; display:flex; gap:8px; align-items:center; }
+  .step b { display:inline-flex; width:22px; height:22px; border-radius:50%; background:#cfcfca; color:#fff; align-items:center; justify-content:center; font-size:12px; flex:none; }
+  .step.act { background:#fff; color:var(--ink); box-shadow:0 0 0 1.5px var(--ink); font-weight:700; }
+  .step.act b { background:var(--ink); }
+  .step.done { color:var(--ok); } .step.done b { background:var(--ok); }
+  .wrap { max-width:1100px; margin:0 auto; padding:14px 16px 120px; display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
+  h1 { font-size:21px; margin:6px 0 2px; }
+  p.sub { color:var(--mut); margin:0 0 14px; font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px; transition:box-shadow .15s, border-color .15s; }
+  .card.on { border-color:var(--ink); box-shadow:0 0 0 1.5px var(--ink); }
+  .card h3 { margin:0; font-size:16px; }
+  .card .d { color:var(--mut); font-size:12.5px; min-height:34px; }
+  .price { font-size:22px; font-weight:700; } .price small { font-size:12px; font-weight:400; color:var(--mut); }
+  .chips { display:flex; gap:5px; flex-wrap:wrap; }
+  .chip { font-size:11.5px; background:#f0f0ec; border-radius:20px; padding:3px 8px; color:#555; }
+  .chip.act { background:var(--ink); color:#fff; }
+  .qty { display:flex; align-items:center; gap:8px; margin-top:6px; }
+  .qty button.pm { width:42px; height:42px; border:1.5px solid var(--ink); background:#fff; border-radius:10px; font-size:22px; cursor:pointer; }
+  .qty input { width:64px; height:42px; text-align:center; border:1px solid var(--line); border-radius:10px; font-size:17px; }
+  .quick { display:flex; gap:5px; margin-left:auto; }
+  .quick button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:0 8px; height:30px; font-size:12px; cursor:pointer; }
+  .line { font-size:12.5px; color:var(--ok); min-height:16px; }
+  .na { font-size:13px; color:var(--mut); }
+  section.box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:18px; }
+  section.box h2 { margin:0 0 6px; font-size:17px; }
+  label { display:block; font-size:13px; color:#444; margin:10px 0 3px; }
+  input[type=text], input[type=email], input[type=tel], textarea { width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:inherit; }
+  input:focus, textarea:focus { outline:2px solid var(--ink); border-color:var(--ink); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .tel { display:flex; gap:6px; } .tel span { padding:11px 12px; border:1px solid var(--line); border-radius:8px; background:#fafafa; }
+  .hp { position:absolute; left:-9999px; opacity:0; height:0; }
+  aside { position:sticky; top:12px; background:#fff; border:1px solid var(--ink); border-radius:12px; padding:16px; }
+  aside h2 { margin:0 0 8px; font-size:17px; display:flex; justify-content:space-between; align-items:center; }
+  aside h2 span { font-size:12px; font-weight:400; color:var(--mut); }
+  #lista { max-height:42vh; overflow:auto; }
+  #lista .it { display:flex; gap:8px; align-items:baseline; padding:7px 0; border-bottom:1px solid #f0f0ec; font-size:13.5px; }
+  #lista .it .n { flex:1; } #lista .it .n small { display:block; color:var(--mut); font-size:12px; }
+  #lista .it b { white-space:nowrap; }
+  #lista .it button { border:0; background:none; color:#b00020; cursor:pointer; font-size:16px; }
+  #lista .vacio { color:var(--mut); font-size:13.5px; padding:10px 0; }
+  .tot { display:flex; justify-content:space-between; align-items:baseline; margin-top:10px; font-size:26px; font-weight:700; }
+  .tot small { font-size:12px; font-weight:400; color:var(--mut); }
+  .meter { height:8px; background:#eee; border-radius:5px; overflow:hidden; margin:10px 0 6px; }
+  .meter i { display:block; height:100%; background:var(--acc); width:0; transition:width .3s; }
+  #aviso { font-size:13px; color:#333; min-height:36px; }
+  button.send { width:100%; margin-top:10px; background:var(--ink); color:#fff; border:0; padding:15px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; }
+  button.send:disabled { opacity:.35; cursor:not-allowed; }
+  #falta { font-size:12.5px; color:#b06000; margin-top:8px; min-height:16px; }
+  #mbar { display:none; }
+  #ok { display:none; background:#fff; border:1px solid var(--ok); border-radius:12px; padding:24px; margin:18px auto; max-width:640px; }
+  #ok h2 { color:var(--ok); margin-top:0; }
+  .foot { color:var(--mut); font-size:12.5px; margin-top:16px; }
+  .err { color:#b00020; font-size:13px; margin-top:8px; }
+  @media (max-width:860px) {
+    .wrap { grid-template-columns:1fr; padding-bottom:150px; }
+    aside { position:fixed; left:0; right:0; bottom:0; top:auto; border-radius:14px 14px 0 0; border:0; box-shadow:0 -6px 20px rgba(0,0,0,.18); z-index:5; padding:10px 14px 14px; }
+    aside:not(.open) #lista, aside:not(.open) .meter, aside:not(.open) #aviso, aside:not(.open) #falta { display:none; }
+    aside:not(.open) .tot { margin-top:0; font-size:20px; }
+    aside h2 { cursor:pointer; margin-bottom:4px; }
+    aside.open #lista { max-height:34vh; }
+    #mbar { display:block; font-size:12px; color:var(--mut); }
+    .row2 { grid-template-columns:1fr; }
+    .steps .step span { display:none; } .steps .step.act span { display:inline; }
+  }
+</style>
+</head>
+<body>
+<header>INVISIBLE STASH<small>Pedido mayorista · sin pedido mínimo · envío discreto</small></header>
+<div class="steps">
+  <div class="step act" id="s1"><b>1</b><span>Elige tus productos</span></div>
+  <div class="step" id="s2"><b>2</b><span>Tus datos</span></div>
+  <div class="step" id="s3"><b>3</b><span>Envía y recibe la proforma</span></div>
+</div>
+
+<div class="wrap" id="form">
+  <div>
+    <h1>Elige las cantidades</h1>
+    <p class="sub">Con más unidades el precio baja solo. Tu pedido se ve a la derecha en todo momento. <span id="modo"></span></p>
+    <div class="grid" id="productos"></div>
+
+    <section class="box" id="datos">
+      <h2>Tus datos para facturar y enviar</h2>
+      <div class="row2">
+        <div><label for="razon">Razón social o nombre *</label><input type="text" id="razon" autocomplete="organization"></div>
+        <div><label for="nif">NIF / CIF *</label><input type="text" id="nif"></div>
+      </div>
+      <div class="row2">
+        <div><label for="email">Email *</label><input type="email" id="email" autocomplete="email"></div>
+        <div><label for="tel">Teléfono *</label><div class="tel"><span>+34</span><input type="tel" id="tel" placeholder="600 000 000" autocomplete="tel-national"></div></div>
+      </div>
+      <label for="dir">Dirección de envío *</label><input type="text" id="dir" autocomplete="street-address">
+      <div class="row2">
+        <div><label for="cp">Código postal *</label><input type="text" id="cp" autocomplete="postal-code"></div>
+        <div><label for="ciudad">Población *</label><input type="text" id="ciudad" autocomplete="address-level2"></div>
+      </div>
+      <label for="notas">Notas (opcional)</label><textarea id="notas" rows="2"></textarea>
+      <div class="hp"><label>No rellenar</label><input type="text" id="web" tabindex="-1" autocomplete="off"></div>
+      <div class="err" id="err"></div>
+    </section>
+    <p class="foot">Precios en euros por unidad, IVA no incluido. Pago por transferencia antes del envío. Entrega en 3-5 días laborables desde el pago (en momentos de alta demanda puede haber retrasos de algunos días). Envío a Península y Baleares. ¿Dudas? WhatsApp +34 623 82 88 00.</p>
+  </div>
+
+  <aside id="resumen">
+    <h2 id="cab">Tu pedido <span id="cuenta">0 productos</span></h2>
+    <div id="lista"><div class="vacio">Aún no has elegido nada. Pulsa + en un producto.</div></div>
+    <div class="tot"><span>Total</span><span><span id="total">0,00 €</span> <small>+ IVA</small></span></div>
+    <div class="meter"><i id="meter"></i></div>
+    <div id="aviso">Añade productos para empezar.</div>
+    <button class="send" id="enviar" disabled>Enviar pedido</button>
+    <div id="falta"></div>
+  </aside>
+</div>
+
+<div id="ok">
+  <h2>Pedido recibido</h2>
+  <p>Gracias. En unos minutos te llega la <strong>proforma</strong> por email con los datos de la transferencia. En cuanto veamos el pago, te enviamos la factura en PDF y preparamos tu pedido. Cuando salga, te llega el número de seguimiento.</p>
+  <p class="foot">¿Algo que ajustar? Escríbenos por WhatsApp al +34 623 82 88 00.</p>
+</div>
+
+<script>
+var WEBHOOK = "https://shade-stash-automatizacion-n8n.jpexyl.easypanel.host/webhook/pedido-mayorista";
+// Tarifa vigente 01/10/2026. Mantener igual que en el flujo de n8n «Invisible - Pedido web».
+var T_TIENDA = [1, 48, 144];
+var T_DIST = [48, 144, 500];
+var PRODUCTOS = [
+  { id: "mechero", n: "Mechero", d: "Objeto cotidiano con compartimento oculto.", t: [4.50, 4.20, 3.90], dist: [3.50, 3.20, 3.00] },
+  { id: "llave", n: "Llave de coche con fresado real", d: "Fresado real en la pieza metálica. Pieza decorativa con compartimento oculto.", t: [6.20, 5.90, 5.60], dist: [4.80, 4.50, 4.20] },
+  { id: "desodorante", n: "Desodorante básico", d: "Envase de apariencia real con compartimento oculto. Surtido de marcas.", t: [9.90, 9.40, 8.90], dist: [7.00, 6.50, 6.00] },
+  { id: "sanex", n: "Desodorante Premium Sanex 50 ml", d: "Marca Sanex, detalle de realismo con depósito. Compartimento oculto.", t: [13.95, 13.50, 12.90], dist: [9.50, 9.00, 8.50] },
+  { id: "rotulador", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: null },
+  { id: "ventilador", n: "Ventilador de coche", d: "Novedad difícil de encontrar. Compartimento oculto.", t: [6.50, 6.20, 5.90], dist: [4.50, 4.20, 4.00] },
+  { id: "pintalabios", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: null },
+  { id: "vaporizador", n: "Vaporizador decorativo Premium", d: "Acabado premium. Compartimento oculto.", t: [14.00, 13.50, 13.00], dist: [12.40, 12.30, 12.20] }
+];
+var qs = new URLSearchParams(location.search);
+var DIST = qs.get("t") === "d";
+var UMB = DIST ? T_DIST : T_TIENDA;
+var RANGOS = DIST ? ["48-143", "144-499", "500+"] : ["1-47", "48-143", "144+"];
+var PORTES = DIST ? 350 : 150;
+var qty = {};
+var $ = function (id) { return document.getElementById(id); };
+var fmt = function (n) { return n.toFixed(2).replace(".", ",") + " €"; };
+var pr = function (p) { return DIST ? p.dist : p.t; };
+function tramo(q) { var i = -1; for (var k = 0; k < UMB.length; k++) { if (q >= UMB[k]) { i = k; } } return i; }
+
+if (DIST) { $("modo").textContent = "Tarifa de distribuidor (desde 48 unidades por producto)."; }
+if (qs.get("e")) { $("email").value = qs.get("e"); }
+
+function pinta() {
+  var cont = $("productos"); cont.innerHTML = "";
+  PRODUCTOS.forEach(function (p) {
+    var precios = pr(p), div = document.createElement("div");
+    div.className = "card"; div.id = "c_" + p.id;
+    if (!precios) { div.innerHTML = "<h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.</div>"; cont.appendChild(div); return; }
+    var chips = precios.map(function (v, i) { return "<span class='chip' id='t_" + p.id + "_" + i + "'>" + RANGOS[i] + " uds · " + fmt(v) + "</span>"; }).join("");
+    var rap = (DIST ? [48, 144, 500] : [12, 48, 144]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
+    div.innerHTML = "<h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
+      "<div class='qty'><button type='button' class='pm' data-id='" + p.id + "' data-d='-1' aria-label='Quitar uno'>−</button><input type='number' min='0' inputmode='numeric' id='q_" + p.id + "' value='0'><button type='button' class='pm' data-id='" + p.id + "' data-d='1' aria-label='Añadir uno'>+</button><div class='quick'>" + rap + "</div></div><div class='line' id='l_" + p.id + "'></div>";
+    cont.appendChild(div);
+  });
+}
+
+function recalcula() {
+  var total = 0, n = 0, lista = "", minOk = true;
+  PRODUCTOS.forEach(function (p) {
+    var precios = pr(p); if (!precios) { return; }
+    var q = qty[p.id] || 0, i = tramo(q), card = $("c_" + p.id), linea = $("l_" + p.id);
+    for (var k = 0; k < precios.length; k++) { var ch = $("t_" + p.id + "_" + k); if (ch) { ch.className = "chip" + ((k === i && q > 0) ? " act" : ""); } }
+    $("p_" + p.id).innerHTML = fmt(i >= 0 ? precios[i] : precios[0]) + " <small>/ud</small>";
+    if (q > 0 && i >= 0) {
+      var imp = Math.round(q * precios[i] * 100) / 100; total += imp; n++;
+      card.className = "card on";
+      var sig = (i + 1 < UMB.length) ? "Con " + UMB[i + 1] + " uds baja a " + fmt(precios[i + 1]) + "/ud" : "Precio mínimo conseguido";
+      linea.textContent = "✓ " + q + " × " + fmt(precios[i]) + " = " + fmt(imp) + " · " + sig;
+      lista += "<div class='it'><div class='n'>" + q + " × " + p.n + "<small>" + fmt(precios[i]) + " por unidad</small></div><b>" + fmt(imp) + "</b><button type='button' title='Quitar' data-id='" + p.id + "' data-set='0'>×</button></div>";
+    } else if (q > 0) {
+      minOk = false; card.className = "card on"; linea.textContent = "Mínimo " + UMB[0] + " unidades en tarifa de distribuidor.";
+    } else { card.className = "card"; linea.textContent = ""; }
+  });
+  total = Math.round(total * 100) / 100;
+  $("lista").innerHTML = lista || "<div class='vacio'>Aún no has elegido nada. Pulsa + en un producto.</div>";
+  $("cuenta").textContent = n + (n === 1 ? " producto" : " productos");
+  $("total").textContent = fmt(total);
+  var aviso, meta;
+  if (n === 0) { aviso = "Añade productos para empezar."; meta = 0; }
+  else if (total < 40) { aviso = "Te faltan " + fmt(40 - total) + " para el envío gratis de bienvenida (primer pedido)."; meta = total / 80; }
+  else if (total < 80) { aviso = "✓ Envío gratis. Te faltan " + fmt(80 - total) + " para un ventilador de regalo (primer pedido)."; meta = total / 80; }
+  else if (total < PORTES) { aviso = "✓ Envío gratis y ✓ ventilador de regalo en tu primer pedido. Portes gratis siempre desde " + fmt(PORTES) + "."; meta = 1; }
+  else { aviso = "✓ Portes gratis conseguidos."; meta = 1; }
+  $("aviso").textContent = aviso; $("meter").style.width = Math.min(100, meta * 100) + "%";
+  window.__t = total; window.__n = n; window.__min = minOk;
+  valida();
+}
+
+function valida() {
+  var faltan = [];
+  [["razon", "razón social"], ["nif", "NIF/CIF"], ["email", "email"], ["tel", "teléfono"], ["dir", "dirección"], ["cp", "código postal"], ["ciudad", "población"]].forEach(function (c) { if (!$(c[0]).value.trim()) { faltan.push(c[1]); } });
+  var conItems = window.__n > 0 && window.__t > 0 && window.__min;
+  var ok = conItems && faltan.length === 0;
+  $("enviar").disabled = !ok;
+  $("falta").textContent = !conItems ? "" : (faltan.length ? "Falta: " + faltan.join(", ") : "");
+  $("s1").className = "step" + (conItems ? " done" : " act");
+  $("s2").className = "step" + (!conItems ? "" : (faltan.length ? " act" : " done"));
+  $("s3").className = "step" + (ok ? " act" : "");
+}
+
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#cab") && window.matchMedia("(max-width:860px)").matches) { $("resumen").classList.toggle("open"); return; }
+  var b = e.target.closest("button[data-id]"); if (!b) { return; }
+  var id = b.getAttribute("data-id"), cur = qty[id] || 0;
+  cur = b.hasAttribute("data-d") ? Math.max(0, cur + parseInt(b.getAttribute("data-d"), 10)) : parseInt(b.getAttribute("data-set"), 10);
+  qty[id] = cur; $("q_" + id).value = cur; recalcula();
+});
+document.addEventListener("input", function (e) {
+  if (e.target.id && e.target.id.indexOf("q_") === 0) { var id = e.target.id.slice(2); qty[id] = Math.max(0, parseInt(e.target.value, 10) || 0); recalcula(); }
+  else { valida(); }
+});
+
+$("enviar").addEventListener("click", function () {
+  var btn = this, err = $("err"); err.textContent = "";
+  if ($("web").value) { return; }
+  var lineas = PRODUCTOS.filter(function (p) { return (qty[p.id] || 0) > 0 && pr(p); }).map(function (p) { return { id: p.id, cantidad: qty[p.id] }; });
+  var datos = { razon_social: $("razon").value.trim(), nif: $("nif").value.trim(), email: $("email").value.trim(), telefono: "+34 " + $("tel").value.trim(), direccion: $("dir").value.trim(), cp: $("cp").value.trim(), ciudad: $("ciudad").value.trim(), notas: $("notas").value.trim() };
+  btn.disabled = true; btn.textContent = "Enviando…";
+  fetch(WEBHOOK, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tarifa: DIST ? "distribuidor" : "tienda", lineas: lineas, datos: datos }) })
+    .then(function (r) { if (!r.ok) { throw new Error("http"); } })
+    .then(function () { $("form").style.display = "none"; $("ok").style.display = "block"; document.querySelector(".steps").style.display = "none"; window.scrollTo(0, 0); })
+    .catch(function () { err.textContent = "No hemos podido enviar el pedido. Escríbenos por WhatsApp al +34 623 82 88 00 y lo gestionamos enseguida."; $("resumen").classList.add("open"); btn.disabled = false; btn.textContent = "Enviar pedido"; });
+});
+
+pinta(); recalcula();
+</script>
+</body>
+</html>
