@@ -253,8 +253,8 @@ function recalcula() {
   $("aviso").textContent = aviso;
   $("meter").style.width = Math.min(100, sub / 80 * 100) + "%";
   $("mini").textContent = n === 0 ? "" : ("🚚 " + (gana40 ? "✓" : "faltan " + fmt(40 - sub)) + "  ·  🎁 " + (gana80 ? "✓" : "faltan " + fmt(80 - sub)));
-  if (gana40 && !window.__g40) { if (DIST) { celebra("¡Envío gratis conseguido!", "", ""); } else { celebra("¡Me he ganado unas cañas! 🍻🍻", "Envío gratis: " + fmt(6.90) + " que se quedan en tu bolsillo. ¡Esto se celebra!!! 🍻 Cuando te tomes la primera, brinda con tu colega a nuestra salud y acuérdate de tu compra en Invisible Stash. ¡Salud!!!", "🍻🥂"); } }
-  if (gana80 && !window.__g80) { if (DIST) { celebra("¡Ventilador de regalo conseguido!", "", ""); } else { celebra("¡Cine pagado: 2 entradas, palomitas y bebida! 🎫🎫🍿🥤", "Ventilador de regalo + envío gratis: lo ahorrado da para dos entradas de cine, unas palomitas y una bebida. ¡Plan de peli del finde!!! Cuando estés en la butaca, acuérdate de tu compra en Invisible Stash.", "🎫🎫🍿🥤"); } }
+  if (gana40 && !window.__g40) { if (DIST) { celebra("¡Envío gratis conseguido!", "", ""); } else { celebra("¡Me he ganado unas cañas! 🍻", "Envío gratis: " + fmt(6.90) + " que se quedan en tu bolsillo. ¡Salud!", "🍻🥂"); } }
+  if (gana80 && !window.__g80) { if (DIST) { celebra("¡Ventilador de regalo conseguido!", "", ""); } else { celebra("¡Cine pagado! 🎫🎫🍿🥤", "Ventilador de regalo y envío gratis: dos entradas, palomitas y bebida.", "🎫🎫🍿🥤"); } }
   window.__g40 = gana40; window.__g80 = gana80;
   window.__t = sub; window.__n = n; window.__min = minOk;
   valida();
