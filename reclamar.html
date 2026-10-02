@@ -19,7 +19,7 @@
   section { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:14px; }
   section h2 { margin:0 0 6px; font-size:16px; }
   label.t { display:block; font-size:13px; color:#444; margin:12px 0 4px; }
-  input[type=text], input[type=email], input[type=number], select, textarea { width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:inherit; background:#fff; }
+  input[type=text], input[type=email], input[type=number], input[type=date], select, textarea { width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:inherit; background:#fff; }
   input:focus, select:focus, textarea:focus { outline:2px solid var(--ink); border-color:var(--ink); }
   .op { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
   .op label { flex:1; min-width:120px; border:1.5px solid var(--line); border-radius:10px; padding:11px 12px; cursor:pointer; background:#fff; }
@@ -78,8 +78,10 @@
         <div class="op" data-name="golpeado"><label><input type="radio" name="golpeado" value="si">Sí</label><label><input type="radio" name="golpeado" value="no">No</label></div></div>
       <div class="q"><b>¿El producto ya estaba roto al abrirlo? *</b>
         <div class="op" data-name="roto"><label><input type="radio" name="roto" value="si">Sí</label><label><input type="radio" name="roto" value="no">No</label></div></div>
-      <div class="q"><b>¿Se ha usado como muestra o expositor en tienda? *</b>
-        <div class="op" data-name="muestra"><label><input type="radio" name="muestra" value="si">Sí</label><label><input type="radio" name="muestra" value="no">No</label></div></div>
+      <label class="t" for="fecha">¿Cuándo recibiste el pedido? *</label>
+      <input type="date" id="fecha">
+      <label class="t" for="noto">¿Cómo y cuándo notaste el problema? *</label>
+      <input type="text" id="noto" placeholder="Por ejemplo: al abrir la caja, el mismo día">
     </section>
 
     <section>
@@ -173,7 +175,9 @@ $("enviar").addEventListener("click", function () {
   if (!$("producto").value) { falta.push("el producto"); }
   if (!($("unidades").value > 0)) { falta.push("las unidades"); }
   if ($("descripcion").value.trim().length < 5) { falta.push("qué ha pasado"); }
-  if (!valor("golpeado") || !valor("roto") || !valor("muestra")) { falta.push("las tres preguntas"); }
+  if (!valor("golpeado") || !valor("roto")) { falta.push("las dos preguntas"); }
+  if (!$("fecha").value) { falta.push("cuándo recibiste el pedido"); }
+  if ($("noto").value.trim().length < 3) { falta.push("cómo notaste el problema"); }
   if (fotos.length === 0) { falta.push("al menos una foto"); }
   if (!valor("pref")) { falta.push("la solución que prefieres"); }
   if (valor("pref") === "reembolso" && $("iban").value.replace(/\s/g, "").length < 15) { falta.push("el IBAN"); }
@@ -183,7 +187,8 @@ $("enviar").addEventListener("click", function () {
   fd.append("pedido", $("pedido").value.trim()); fd.append("email", $("email").value.trim());
   fd.append("producto", $("producto").value); fd.append("unidades", $("unidades").value);
   fd.append("descripcion", $("descripcion").value.trim());
-  fd.append("golpeado", valor("golpeado")); fd.append("roto_al_abrir", valor("roto")); fd.append("usado_muestra", valor("muestra"));
+  fd.append("golpeado", valor("golpeado")); fd.append("roto_al_abrir", valor("roto"));
+  fd.append("fecha_recepcion", $("fecha").value); fd.append("como_noto", $("noto").value.trim());
   fd.append("preferencia", valor("pref")); fd.append("iban", valor("pref") === "reembolso" ? $("iban").value.trim() : "");
   fd.append("web", "");
   fotos.forEach(function (b, i) { fd.append("foto" + i, b, "foto" + i + ".jpg"); });
