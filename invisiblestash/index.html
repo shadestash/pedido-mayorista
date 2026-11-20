@@ -260,7 +260,8 @@ function recalcula() {
   $("cuenta").textContent = n + (n === 1 ? " producto" : " productos");
   var ex = "";
   if (n > 0) {
-    ex += portes > 0 ? "<div class='extra'><span>Portes de envío</span><span>" + fmt(portes) + "</span></div>" : "<div class='extra'><span>🚚 Envío</span><span class='g'>GRATIS ✓</span></div>";
+    ex += "<div class='extra'><span>Subtotal productos</span><span>" + fmt(sub) + "</span></div>";
+    ex += portes > 0 ? "<div class='extra'><span>Portes de envío (gratis desde 100 € en productos)</span><span>" + fmt(portes) + "</span></div>" : "<div class='extra'><span>🚚 Envío (pedido desde 100 €)</span><span class='g'>GRATIS ✓</span></div>";
     if (gana80) { ex += "<div class='extra'><span>🎁 2 ventiladores de coche</span><span class='g'>REGALO ✓</span></div>"; }
     var ahorro = (gana40 ? 6.90 : 0) + (gana80 ? 13.00 : 0);
     if (ahorro > 0) { ex += "<div class='extra'><span>Te estás ahorrando</span><span class='g'>" + fmt(ahorro) + (DIST ? "" : (gana80 ? " · 🎬" : " · 🍻")) + "</span></div>"; }
