@@ -173,7 +173,7 @@
 <script>
 var WHATSAPP = "34623828800";
 // Versión particulares: precios propios, sin flujo n8n; el pedido se envía por WhatsApp.
-var T_TIENDA = [1, 48, 144];
+var T_TIENDA = [1, 50, 100];
 var T_DIST = [48, 144, 500];
 var PRODUCTOS = [
   { id: "mechero", img: "../img/mechero.jpg", n: "Mechero", d: "Objeto cotidiano con compartimento oculto.", t: [4.50, 4.20, 3.90], dist: [3.50, 3.20, 3.00] },
@@ -191,7 +191,7 @@ var PRODUCTOS = [
 var qs = new URLSearchParams(location.search);
 var DIST = false;
 var UMB = DIST ? T_DIST : T_TIENDA;
-var RANGOS = DIST ? ["48-143", "144-499", "500+"] : ["1-47", "48-143", "144+"];
+var RANGOS = DIST ? ["48-143", "144-499", "500+"] : ["1-49", "50-99", "100+"];
 var PORTES = DIST ? 350 : 150;
 var qty = {};
 var $ = function (id) { return document.getElementById(id); };
@@ -209,7 +209,7 @@ function pinta() {
     div.className = "card" + (p.agotado ? " agot" : ""); div.id = "c_" + p.id;
     if (!precios) { div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'" + (p.imgs ? " data-imgs='" + p.imgs.join("|") + "' title='Toca para ver más fotos' style='cursor:pointer'" : "") + "><h3>" + p.n + "</h3><div class='d'>" + p.d + (p.imgs ? " <small>Toca la foto para ver más.</small>" : "") + "</div><div class='na'>" + (p.agotado ? "<b>Agotado temporalmente.</b> Escríbenos por WhatsApp +34 623 82 88 00 y te avisamos cuando vuelva a haber stock." : "Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.") + "</div>"; cont.appendChild(div); return; }
     var chips = precios.map(function (v, i) { return "<span class='chip' id='t_" + p.id + "_" + i + "'>" + RANGOS[i] + " uds · " + fmt(v) + "</span>"; }).join("");
-    var rap = (DIST ? [48, 144, 500] : [12, 48, 144]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
+    var rap = (DIST ? [48, 144, 500] : [12, 50, 100]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
     div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'" + (p.imgs ? " data-imgs='" + p.imgs.join("|") + "' title='Toca para ver más fotos' style='cursor:pointer'" : "") + "><h3>" + p.n + "</h3><div class='d'>" + p.d + (p.imgs ? " <small>Toca la foto para ver más.</small>" : "") + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
       "<div class='qty'><button type='button' class='pm' data-id='" + p.id + "' data-d='-1' aria-label='Quitar uno'>−</button><input type='number' min='0' inputmode='numeric' id='q_" + p.id + "' value='0'><button type='button' class='pm' data-id='" + p.id + "' data-d='1' aria-label='Añadir uno'>+</button><div class='quick'>" + rap + "</div></div><div class='line' id='l_" + p.id + "'></div>";
     cont.appendChild(div);
