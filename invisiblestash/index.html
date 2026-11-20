@@ -168,8 +168,9 @@
 
 <div id="toast"></div><canvas id="confeti"></canvas>
 <div id="ok">
-  <h2>Pedido preparado</h2>
-  <p>Gracias. Se ha abierto WhatsApp con tu pedido: pulsa «Enviar» para mandárnoslo y te lo confirmamos enseguida.</p>
+  <h2>Último paso</h2>
+  <p><strong>Pulsa «Enviar» en tu WhatsApp para finalizar el envío de tu pedido.</strong></p>
+  <p class="foot">¿No se ha abierto? <a class="cbtn" id="rewa" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a></p>
   <p class="foot">¿Algo que ajustar? Escríbenos: <span class="contacto"><a class="cbtn" href="https://wa.me/34623828800" target="_blank" rel="noopener">WhatsApp</a> <a class="cbtn" href="https://t.me/InvisibleStash_bot" target="_blank" rel="noopener">Telegram</a></span></p>
 </div>
 
@@ -321,7 +322,8 @@ $("enviar").addEventListener("click", function () {
   txt += "%0ASubtotal: " + fmt(sub) + "%0AEnvío: " + envio + (sub >= 150 ? "%0ARegalo: 2 ventiladores" : "");
   txt += "%0A%0ANombre: " + $("razon").value.trim() + "%0AEmail: " + $("email").value.trim() + "%0ATeléfono: +34 " + $("tel").value.trim() + "%0ADirección: " + $("dir").value.trim() + ", " + $("cp").value.trim() + " " + $("ciudad").value.trim();
   if ($("notas").value.trim()) { txt += "%0ANotas: " + $("notas").value.trim(); }
-  window.open("https://wa.me/" + WHATSAPP + "?text=" + txt.replace(/\n/g, "%0A").replace(/&/g, "%26").replace(/#/g, "%23"), "_blank");
+  var urlWa = "https://wa.me/" + WHATSAPP + "?text=" + txt.replace(/\n/g, "%0A").replace(/&/g, "%26").replace(/#/g, "%23");
+  $("rewa").href = urlWa; window.open(urlWa, "_blank");
   $("form").style.display = "none"; $("ok").style.display = "block"; document.querySelector(".steps").style.display = "none"; window.scrollTo(0, 0);
 });
 
