@@ -142,14 +142,14 @@
       <div class="hp"><label>No rellenar</label><input type="text" id="web" tabindex="-1" autocomplete="off"></div>
       <div class="err" id="err"></div>
     </section>
-    <p class="foot">Precios en euros por unidad, IVA no incluido. Pago por transferencia antes del envío. Entrega en 3-5 días laborables desde el pago (en momentos de alta demanda puede haber retrasos de algunos días). Envío a Península y Baleares. ¿Dudas? Escríbenos: <span class="contacto"><a class="cbtn" href="https://wa.me/34623828800" target="_blank" rel="noopener">WhatsApp</a> <a class="cbtn" href="https://t.me/InvisibleStash_bot" target="_blank" rel="noopener">Telegram</a></span></p>
+    <p class="foot">Precios en euros por unidad. Entrega en mano. ¿Dudas? Escríbenos: <span class="contacto"><a class="cbtn" href="https://wa.me/34623828800" target="_blank" rel="noopener">WhatsApp</a> <a class="cbtn" href="https://t.me/InvisibleStash_bot" target="_blank" rel="noopener">Telegram</a></span></p>
   </div>
 
   <aside id="resumen">
     <h2 id="cab">Tu pedido <span id="cuenta">0 productos</span></h2>
     <div id="lista"><div class="vacio">Aún no has elegido nada. Pulsa + en un producto.</div></div>
     <div id="extras"></div>
-    <div class="tot"><span>Total</span><span><span id="total">0,00 €</span> <small>+ IVA</small></span></div>
+    <div class="tot"><span>Total</span><span><span id="total">0,00 €</span></span></div>
     <div id="mini"></div>
     <div class="meter"><i id="meter"></i></div>
     <div id="aviso">Añade productos para empezar.</div>
@@ -314,7 +314,7 @@ $("enviar").addEventListener("click", function () {
   lis.forEach(function (p) { var q = qty[p.id], pu = pr(p)[tramo(q)]; sub += q * pu; txt += "- " + q + " x " + p.n + " (" + fmt(pu) + "/ud)%0A"; });
   sub = Math.round(sub * 100) / 100;
   var envio = sub >= 100 ? "gratis" : "6,90 €";
-  txt += "%0ASubtotal: " + fmt(sub) + " + IVA%0AEnvío: " + envio + (sub >= 150 ? "%0ARegalo: 2 ventiladores" : "");
+  txt += "%0ASubtotal: " + fmt(sub) + "%0AEnvío: " + envio + (sub >= 150 ? "%0ARegalo: 2 ventiladores" : "");
   txt += "%0A%0ANombre: " + $("razon").value.trim() + "%0AEmail: " + $("email").value.trim() + "%0ATeléfono: +34 " + $("tel").value.trim() + "%0ADirección: " + $("dir").value.trim() + ", " + $("cp").value.trim() + " " + $("ciudad").value.trim();
   if ($("notas").value.trim()) { txt += "%0ANotas: " + $("notas").value.trim(); }
   window.open("https://wa.me/" + WHATSAPP + "?text=" + txt.replace(/\n/g, "%0A").replace(/&/g, "%26").replace(/#/g, "%23"), "_blank");
