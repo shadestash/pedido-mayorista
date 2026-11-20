@@ -184,6 +184,7 @@ var PRODUCTOS = [
   { id: "rotulador", agotado: true, img: "../img/rotulador.jpg", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: [3.80, 3.50, 3.20] },
   { id: "ventilador", img: "../img/ventilador.jpg", n: "Ventilador de coche", d: "Novedad difícil de encontrar. Compartimento oculto.", t: [6.50, 6.20, 5.90], dist: [4.50, 4.20, 4.00] },
   { id: "pintalabios", agotado: true, img: "../img/pintalabios.jpg", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: [4.60, 4.30, 4.00] },
+  { id: "cargador", img: "../img/cargador-1.jpg", imgs: ["../img/cargador-1.jpg", "../img/cargador-2.jpg", "../img/cargador-3.jpg"], n: "Cargador de móvil", d: "Aspecto de cargador USB-C real. Compartimento oculto.", t: [5.50, 5.30, 5.10], dist: [5.50, 5.30, 5.10] },
   { id: "vaporizador", img: "../img/vaporizador.jpg", n: "Vaporizador decorativo Premium", d: "Acabado premium. Compartimento oculto.", t: [14.00, 13.50, 13.00], dist: [12.40, 12.30, 12.20] }
 ];
 var qs = new URLSearchParams(location.search);
@@ -205,10 +206,10 @@ function pinta() {
   PRODUCTOS.forEach(function (p) {
     var precios = pr(p), div = document.createElement("div");
     div.className = "card" + (p.agotado ? " agot" : ""); div.id = "c_" + p.id;
-    if (!precios) { div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>" + (p.agotado ? "<b>Agotado temporalmente.</b> Escríbenos por WhatsApp +34 623 82 88 00 y te avisamos cuando vuelva a haber stock." : "Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.") + "</div>"; cont.appendChild(div); return; }
+    if (!precios) { div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'" + (p.imgs ? " data-imgs='" + p.imgs.join("|") + "' title='Toca para ver más fotos' style='cursor:pointer'" : "") + "><h3>" + p.n + "</h3><div class='d'>" + p.d + (p.imgs ? " <small>Toca la foto para ver más.</small>" : "") + "</div><div class='na'>" + (p.agotado ? "<b>Agotado temporalmente.</b> Escríbenos por WhatsApp +34 623 82 88 00 y te avisamos cuando vuelva a haber stock." : "Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.") + "</div>"; cont.appendChild(div); return; }
     var chips = precios.map(function (v, i) { return "<span class='chip' id='t_" + p.id + "_" + i + "'>" + RANGOS[i] + " uds · " + fmt(v) + "</span>"; }).join("");
     var rap = (DIST ? [48, 144, 500] : [12, 48, 144]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
-    div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
+    div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'" + (p.imgs ? " data-imgs='" + p.imgs.join("|") + "' title='Toca para ver más fotos' style='cursor:pointer'" : "") + "><h3>" + p.n + "</h3><div class='d'>" + p.d + (p.imgs ? " <small>Toca la foto para ver más.</small>" : "") + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
       "<div class='qty'><button type='button' class='pm' data-id='" + p.id + "' data-d='-1' aria-label='Quitar uno'>−</button><input type='number' min='0' inputmode='numeric' id='q_" + p.id + "' value='0'><button type='button' class='pm' data-id='" + p.id + "' data-d='1' aria-label='Añadir uno'>+</button><div class='quick'>" + rap + "</div></div><div class='line' id='l_" + p.id + "'></div>";
     cont.appendChild(div);
   });
@@ -292,6 +293,8 @@ function valida() {
 }
 
 document.addEventListener("click", function (e) {
+  var im = e.target.closest && e.target.closest("img[data-imgs]");
+  if (im) { var L = im.getAttribute("data-imgs").split("|"), k = (L.indexOf(im.getAttribute("src")) + 1) % L.length; im.setAttribute("src", L[k]); return; }
   if (e.target.closest("#cab") && window.matchMedia("(max-width:860px)").matches) { $("resumen").classList.toggle("open"); return; }
   var b = e.target.closest("button[data-id]"); if (!b) { return; }
   var id = b.getAttribute("data-id"), cur = qty[id] || 0;
