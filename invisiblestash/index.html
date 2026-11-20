@@ -81,6 +81,8 @@
   .small { font-size:11.5px; color:var(--mut); margin:2px 0 0; }
   .extra { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; color:#444; }
   .extra .g { color:var(--ok); font-weight:700; }
+  .extra.sub { font-size:16px; font-weight:700; color:#111; border-top:2px solid #ddd; margin-top:6px; padding-top:9px; }
+  .extra.hint { font-size:12px; color:#8a5a00; background:#fff6e0; border-radius:6px; padding:6px 8px; margin:2px 0 4px; }
   #mini { display:none; font-size:12px; color:#444; }
   #toast { position:fixed; top:14px; left:50%; transform:translate(-50%,-160px); background:var(--ink); color:#fff; padding:14px 22px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.3); z-index:20; transition:transform .45s cubic-bezier(.2,1.3,.4,1); text-align:center; width:min(92vw,460px); }
   #toast b { display:block; font-size:19px; line-height:1.25; }
@@ -152,7 +154,7 @@
     <h2 id="cab">Tu pedido <span id="cuenta">0 productos</span></h2>
     <div id="lista"><div class="vacio">Aún no has elegido nada. Pulsa + en un producto.</div></div>
     <div id="extras"></div>
-    <div class="tot"><span>Total</span><span><span id="total">0,00 €</span></span></div>
+    <div class="tot"><span id="tlab">Total</span><span><span id="total">0,00 €</span></span></div>
     <div id="mini"></div>
     <div class="meter"><i id="meter"></i></div>
     <div id="aviso">Añade productos para empezar.</div>
@@ -260,14 +262,20 @@ function recalcula() {
   $("cuenta").textContent = n + (n === 1 ? " producto" : " productos");
   var ex = "";
   if (n > 0) {
-    ex += "<div class='extra'><span>Subtotal productos</span><span>" + fmt(sub) + "</span></div>";
-    ex += portes > 0 ? "<div class='extra'><span>Portes de envío (gratis desde 100 € en productos)</span><span>" + fmt(portes) + "</span></div>" : "<div class='extra'><span>🚚 Envío (pedido desde 100 €)</span><span class='g'>GRATIS ✓</span></div>";
+    ex += "<div class='extra sub'><span>Subtotal productos</span><span>" + fmt(sub) + "</span></div>";
+    if (portes > 0) {
+      ex += "<div class='extra'><span>+ Portes de envío</span><span>" + fmt(portes) + "</span></div>";
+      ex += "<div class='extra hint'><span>El envío es gratis cuando los productos suman 100 €. Te faltan " + fmt(100 - sub) + ".</span></div>";
+    } else {
+      ex += "<div class='extra'><span>🚚 Envío</span><span class='g'>GRATIS ✓</span></div>";
+    }
     if (gana80) { ex += "<div class='extra'><span>🎁 2 ventiladores de coche</span><span class='g'>REGALO ✓</span></div>"; }
     var ahorro = (gana40 ? 6.90 : 0) + (gana80 ? 13.00 : 0);
-    if (ahorro > 0) { ex += "<div class='extra'><span>Te estás ahorrando</span><span class='g'>" + fmt(ahorro) + (DIST ? "" : (gana80 ? " · 🎬" : " · 🍻")) + "</span></div>"; }
+    if (ahorro > 0) { ex += "<div class='extra'><span>Te estás ahorrando</span><span class='g'>" + fmt(ahorro) + (gana80 ? " · 🎬" : " · 🍻") + "</span></div>"; }
   }
   $("extras").innerHTML = ex;
   $("total").textContent = fmt(total);
+  $("tlab").textContent = portes > 0 ? "Total (productos + portes)" : "Total";
   var hito = function (id, tid, ok, falta, base) { $(id).className = "hito" + (ok ? " ok" : ""); $(tid).textContent = ok ? "¡Conseguido!" : (n > 0 ? "Te faltan " + fmt(falta) : base); };
   hito("h40", "t40", gana40, 100 - sub, "Desde 100 €");
   hito("h80", "t80", gana80, 150 - sub, "Desde 150 €");
