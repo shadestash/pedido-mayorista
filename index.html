@@ -41,6 +41,7 @@
   .quick button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:0 8px; height:30px; font-size:12px; cursor:pointer; }
   .line { font-size:12.5px; color:var(--ok); min-height:16px; text-align:center; }
   .na { font-size:13px; color:var(--mut); }
+  .card.agot { opacity:.6; }
   section.box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:18px; }
   section.box h2 { margin:0 0 6px; font-size:17px; }
   label { display:block; font-size:13px; color:#444; margin:10px 0 3px; }
@@ -181,9 +182,9 @@ var PRODUCTOS = [
   { id: "desodorante", img: "img/desodorante.jpg", n: "Desodorante básico", d: "Envase de apariencia real con compartimento oculto. Surtido de marcas.", t: [9.90, 9.40, 8.90], dist: [7.00, 6.50, 6.00] },
   { id: "sanexxl", img: "img/sanex-xxl.jpg", n: "Desodorante Premium Sanex XXL 90 ml", tag: "XXL · 90 ml · Recomendado", d: "Formato grande de la marca Sanex, con depósito. Compartimento oculto.", t: [19.50, 18.00, 16.50], dist: [14.50, 14.00, 13.50] },
   { id: "sanex", img: "img/sanex.jpg", n: "Desodorante Premium Sanex 50 ml", tag: "Tamaño estándar · 50 ml", d: "Marca Sanex, detalle de realismo con depósito. Compartimento oculto.", t: [13.95, 13.50, 12.90], dist: [9.50, 9.00, 8.50] },
-  { id: "rotulador", img: "img/rotulador.jpg", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: [3.80, 3.50, 3.20] },
+  { id: "rotulador", agotado: true, img: "img/rotulador.jpg", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: [3.80, 3.50, 3.20] },
   { id: "ventilador", img: "img/ventilador.jpg", n: "Ventilador de coche", d: "Novedad difícil de encontrar. Compartimento oculto.", t: [6.50, 6.20, 5.90], dist: [4.50, 4.20, 4.00] },
-  { id: "pintalabios", img: "img/pintalabios.jpg", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: [4.60, 4.30, 4.00] },
+  { id: "pintalabios", agotado: true, img: "img/pintalabios.jpg", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: [4.60, 4.30, 4.00] },
   { id: "vaporizador", img: "img/vaporizador.jpg", n: "Vaporizador decorativo Premium", d: "Acabado premium. Compartimento oculto.", t: [14.00, 13.50, 13.00], dist: [12.40, 12.30, 12.20] }
 ];
 var qs = new URLSearchParams(location.search);
@@ -194,7 +195,7 @@ var PORTES = DIST ? 350 : 150;
 var qty = {};
 var $ = function (id) { return document.getElementById(id); };
 var fmt = function (n) { return n.toFixed(2).replace(".", ",") + " €"; };
-var pr = function (p) { return DIST ? p.dist : p.t; };
+var pr = function (p) { return p.agotado ? null : (DIST ? p.dist : p.t); };
 function tramo(q) { var i = -1; for (var k = 0; k < UMB.length; k++) { if (q >= UMB[k]) { i = k; } } return i; }
 
 if (DIST) { $("modo").textContent = "Tarifa de distribuidor (desde 48 unidades por producto)."; }
@@ -204,8 +205,8 @@ function pinta() {
   var cont = $("productos"); cont.innerHTML = "";
   PRODUCTOS.forEach(function (p) {
     var precios = pr(p), div = document.createElement("div");
-    div.className = "card"; div.id = "c_" + p.id;
-    if (!precios) { div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.</div>"; cont.appendChild(div); return; }
+    div.className = "card" + (p.agotado ? " agot" : ""); div.id = "c_" + p.id;
+    if (!precios) { div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>" + (p.agotado ? "<b>Agotado temporalmente.</b> Escríbenos por WhatsApp +34 623 82 88 00 y te avisamos cuando vuelva a haber stock." : "Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.") + "</div>"; cont.appendChild(div); return; }
     var chips = precios.map(function (v, i) { return "<span class='chip' id='t_" + p.id + "_" + i + "'>" + RANGOS[i] + " uds · " + fmt(v) + "</span>"; }).join("");
     var rap = (DIST ? [48, 144, 500] : [12, 48, 144]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
     div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
