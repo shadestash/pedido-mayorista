@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pedido · Invisible Stash</title>
+<link rel="icon" href="img/favicon.png">
+<style>
+  :root { --ink:#1a1a1a; --bg:#f4f4f2; --card:#fff; --line:#e3e3df; --mut:#777; --ok:#1f7a3d; --acc:#1f7a3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:#222; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:1.45; }
+  header { background:#fff; border-bottom:3px solid #ff9100; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+  header img { height:46px; width:auto; display:block; }
+  header small { margin-left:auto; text-align:right; font-size:12.5px; color:#555; line-height:1.3; }
+  .steps { display:flex; gap:8px; max-width:1100px; margin:14px auto 0; padding:0 16px; }
+  .step { flex:1; background:#e9e9e5; border-radius:8px; padding:9px 10px; font-size:13px; color:#666; display:flex; gap:8px; align-items:center; }
+  .step b { display:inline-flex; width:22px; height:22px; border-radius:50%; background:#cfcfca; color:#fff; align-items:center; justify-content:center; font-size:12px; flex:none; }
+  .step.act { background:#fff; color:var(--ink); box-shadow:0 0 0 1.5px var(--ink); font-weight:700; }
+  .step.act b { background:var(--ink); }
+  .step.done { color:var(--ok); } .step.done b { background:var(--ok); }
+  .wrap { max-width:1100px; margin:0 auto; padding:14px 16px 120px; display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
+  h1 { font-size:21px; margin:6px 0 2px; }
+  p.sub { color:var(--mut); margin:0 0 14px; font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px; transition:box-shadow .15s, border-color .15s; }
+  .card.on { border-color:var(--ink); box-shadow:0 0 0 1.5px var(--ink); }
+  .card .ph { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; background:#efe9e0; display:block; }
+  .card .tag { align-self:flex-start; font-size:11.5px; font-weight:700; background:#eee; color:#444; border-radius:20px; padding:3px 10px; }
+  .card .tag.big { background:#ff9100; color:#fff; }
+  .card h3 { margin:0; font-size:16px; }
+  .card .d { color:var(--mut); font-size:12.5px; min-height:34px; flex:1; }
+  .price { font-size:22px; font-weight:700; text-align:center; } .price small { font-size:12px; font-weight:400; color:var(--mut); }
+  .chips { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
+  .chip { font-size:11.5px; background:#f0f0ec; border-radius:20px; padding:3px 8px; color:#555; }
+  .chip.act { background:var(--ink); color:#fff; }
+  .qty { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .qty button.pm { width:42px; height:42px; border:1.5px solid var(--ink); background:#fff; border-radius:10px; font-size:22px; cursor:pointer; }
+  .qty input { width:64px; height:42px; text-align:center; border:1px solid var(--line); border-radius:10px; font-size:17px; }
+  .quick { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; flex-basis:100%; }
+  .quick button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:0 8px; height:30px; font-size:12px; cursor:pointer; }
+  .line { font-size:12.5px; color:var(--ok); min-height:16px; text-align:center; }
+  .na { font-size:13px; color:var(--mut); }
+  .card.agot { opacity:.6; }
+  section.box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:18px; }
+  section.box h2 { margin:0 0 6px; font-size:17px; }
+  label { display:block; font-size:13px; color:#444; margin:10px 0 3px; }
+  input[type=text], input[type=email], input[type=tel], textarea { width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:inherit; }
+  input:focus, textarea:focus { outline:2px solid var(--ink); border-color:var(--ink); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .tel { display:flex; gap:6px; } .tel span { padding:11px 12px; border:1px solid var(--line); border-radius:8px; background:#fafafa; }
+  .hp { position:absolute; left:-9999px; opacity:0; height:0; }
+  aside { position:sticky; top:12px; background:#fff; border:1px solid var(--ink); border-radius:12px; padding:16px; }
+  aside h2 { margin:0 0 8px; font-size:17px; display:flex; justify-content:space-between; align-items:center; }
+  aside h2 span { font-size:12px; font-weight:400; color:var(--mut); }
+  #lista { max-height:42vh; overflow:auto; }
+  #lista .it { display:flex; gap:8px; align-items:baseline; padding:7px 0; border-bottom:1px solid #f0f0ec; font-size:13.5px; }
+  #lista .it .n { flex:1; } #lista .it .n small { display:block; color:var(--mut); font-size:12px; }
+  #lista .it b { white-space:nowrap; }
+  #lista .it button { border:0; background:none; color:#b00020; cursor:pointer; font-size:16px; }
+  #lista .vacio { color:var(--mut); font-size:13.5px; padding:10px 0; }
+  .tot { display:flex; justify-content:space-between; align-items:baseline; margin-top:10px; font-size:26px; font-weight:700; }
+  .tot small { font-size:12px; font-weight:400; color:var(--mut); }
+  .meter { height:8px; background:#eee; border-radius:5px; overflow:hidden; margin:10px 0 6px; }
+  .meter i { display:block; height:100%; background:var(--acc); width:0; transition:width .3s; }
+  #aviso { font-size:13px; color:#333; min-height:36px; }
+  button.send { width:100%; margin-top:10px; background:var(--ink); color:#fff; border:0; padding:15px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; }
+  button.send:disabled { opacity:.35; cursor:not-allowed; }
+  #falta { font-size:12.5px; color:#b06000; margin-top:8px; min-height:16px; }
+  .hitos { margin:10px 0 4px; display:flex; flex-direction:column; gap:8px; }
+  .hito { display:flex; gap:10px; align-items:center; padding:9px 10px; border-radius:10px; background:#f3f3ef; color:#666; font-size:13px; transition:all .25s; }
+  .hito .ic { font-size:22px; filter:grayscale(1); opacity:.55; transition:all .25s; }
+  .hito b { display:block; color:#333; }
+  .hito.ok { background:#e6f4ea; color:#14532d; box-shadow:0 0 0 1.5px var(--ok); }
+  .hito.ok .ic { filter:none; opacity:1; animation:pop .5s; }
+  .hito.ok b { color:#14532d; }
+  @keyframes pop { 0% { transform:scale(.4); } 60% { transform:scale(1.5); } 100% { transform:scale(1); } }
+  .small { font-size:11.5px; color:var(--mut); margin:2px 0 0; }
+  .extra { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; color:#444; }
+  .extra .g { color:var(--ok); font-weight:700; }
+  #mini { display:none; font-size:12px; color:#444; }
+  #toast { position:fixed; top:14px; left:50%; transform:translate(-50%,-160px); background:var(--ink); color:#fff; padding:14px 22px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.3); z-index:20; transition:transform .45s cubic-bezier(.2,1.3,.4,1); text-align:center; width:min(92vw,460px); }
+  #toast b { display:block; font-size:19px; line-height:1.25; }
+  #toast span { display:block; font-size:14px; margin-top:4px; color:#e8e8e4; }
+  #toast.show { transform:translate(-50%,0); }
+  #confeti { position:fixed; inset:0; pointer-events:none; z-index:19; }
+  #mbar { display:none; }
+  #ok { display:none; background:#fff; border:1px solid var(--ok); border-radius:12px; padding:24px; margin:18px auto; max-width:640px; }
+  #ok h2 { color:var(--ok); margin-top:0; }
+  .foot { color:var(--mut); font-size:12.5px; margin-top:16px; }
+  .err { color:#b00020; font-size:13px; margin-top:8px; }
+  @media (max-width:860px) {
+    .wrap { grid-template-columns:1fr; padding-bottom:150px; }
+    aside { position:fixed; left:0; right:0; bottom:0; top:auto; border-radius:14px 14px 0 0; border:0; box-shadow:0 -6px 20px rgba(0,0,0,.18); z-index:5; padding:10px 14px 14px; }
+    aside:not(.open) #lista, aside:not(.open) .meter, aside:not(.open) #aviso, aside:not(.open) #falta { display:none; }
+    aside:not(.open) .tot { margin-top:0; font-size:20px; }
+    aside:not(.open) #mini { display:block; }
+    aside:not(.open) .hitos, aside:not(.open) .small, aside:not(.open) #extras { display:none; }
+    aside h2 { cursor:pointer; margin-bottom:4px; }
+    aside.open #lista { max-height:34vh; }
+    #mbar { display:block; font-size:12px; color:var(--mut); }
+    .row2 { grid-template-columns:1fr; }
+    .grid { grid-template-columns:1fr; }
+    .card { display:grid; grid-template-columns:96px 1fr; column-gap:12px; align-items:start; }
+    .card .ph { grid-row:1 / span 3; width:96px; height:96px; }
+    .card .qty, .card .line, .card .chips { grid-column:1 / -1; }
+    .card .d { min-height:0; flex:none; } .card .price { text-align:left; }
+    .steps .step span { display:none; } .steps .step.act span { display:inline; }
+  }
+.cbtn{display:inline-block;margin:2px 4px 2px 0;padding:6px 12px;border-radius:999px;background:#ff7a1a;color:#14303a;font-weight:700;text-decoration:none}.cbtn:hover{filter:brightness(1.1)}
+</style>
+</head>
+<body>
+<header><img src="../img/logo.png" alt="Invisible Stash"><small>Pedido personalizado<br>envío discreto</small></header>
+<div class="steps">
+  <div class="step act" id="s1"><b>1</b><span>Elige tus productos</span></div>
+  <div class="step" id="s2"><b>2</b><span>Tus datos</span></div>
+  <div class="step" id="s3"><b>3</b><span>Envía y recibe la proforma</span></div>
+</div>
+
+<div class="wrap" id="form">
+  <div>
+    <h1>Elige las cantidades</h1>
+    <p class="sub">Con más unidades el precio baja solo. Tu pedido se ve a la derecha en todo momento. <span id="modo"></span></p>
+    <div class="grid" id="productos"></div>
+
+    <section class="box" id="datos">
+      <h2>Tus datos para el envío</h2>
+      <div class="row2">
+        <div><label for="razon">Nombre *</label><input type="text" id="razon" autocomplete="name"></div>
+        <div><label for="email">Email *</label><input type="email" id="email" autocomplete="email"></div>
+      </div>
+      <div class="row2">
+        <div><label for="tel">Teléfono *</label><div class="tel"><span>+34</span><input type="tel" id="tel" placeholder="600 000 000" autocomplete="tel-national"></div></div>
+      </div>
+      <label for="dir">Dirección de envío *</label><input type="text" id="dir" autocomplete="street-address">
+      <div class="row2">
+        <div><label for="cp">Código postal *</label><input type="text" id="cp" autocomplete="postal-code"></div>
+        <div><label for="ciudad">Población *</label><input type="text" id="ciudad" autocomplete="address-level2"></div>
+      </div>
+      <label for="notas">Notas (opcional)</label><textarea id="notas" rows="2"></textarea>
+      <div class="hp"><label>No rellenar</label><input type="text" id="web" tabindex="-1" autocomplete="off"></div>
+      <div class="err" id="err"></div>
+    </section>
+    <p class="foot">Precios en euros por unidad, IVA no incluido. Pago por transferencia antes del envío. Entrega en 3-5 días laborables desde el pago (en momentos de alta demanda puede haber retrasos de algunos días). Envío a Península y Baleares. ¿Dudas? Escríbenos: <span class="contacto"><a class="cbtn" href="https://wa.me/34623828800" target="_blank" rel="noopener">WhatsApp</a> <a class="cbtn" href="https://t.me/InvisibleStash_bot" target="_blank" rel="noopener">Telegram</a></span></p>
+  </div>
+
+  <aside id="resumen">
+    <h2 id="cab">Tu pedido <span id="cuenta">0 productos</span></h2>
+    <div id="lista"><div class="vacio">Aún no has elegido nada. Pulsa + en un producto.</div></div>
+    <div id="extras"></div>
+    <div class="tot"><span>Total</span><span><span id="total">0,00 €</span> <small>+ IVA</small></span></div>
+    <div id="mini"></div>
+    <div class="meter"><i id="meter"></i></div>
+    <div id="aviso">Añade productos para empezar.</div>
+    <div class="hitos">
+      <div class="hito" id="h40"><span class="ic">🚚</span><div><b>Envío gratis</b><span id="t40">Desde 100 €</span></div></div>
+      <div class="hito" id="h80"><span class="ic">🎁</span><div><b>2 ventiladores de regalo</b><span id="t80">Desde 150 €</span></div></div>
+    </div>
+    
+    <button class="send" id="enviar" disabled>Enviar pedido</button>
+    <div id="falta"></div>
+  </aside>
+</div>
+
+<div id="toast"></div><canvas id="confeti"></canvas>
+<div id="ok">
+  <h2>Pedido preparado</h2>
+  <p>Gracias. Se ha abierto WhatsApp con tu pedido: pulsa «Enviar» para mandárnoslo y te confirmamos disponibilidad y datos de pago enseguida.</p>
+  <p class="foot">¿Algo que ajustar? Escríbenos: <span class="contacto"><a class="cbtn" href="https://wa.me/34623828800" target="_blank" rel="noopener">WhatsApp</a> <a class="cbtn" href="https://t.me/InvisibleStash_bot" target="_blank" rel="noopener">Telegram</a></span></p>
+</div>
+
+<script>
+var WHATSAPP = "34623828800";
+// Versión particulares: precios propios, sin flujo n8n; el pedido se envía por WhatsApp.
+var T_TIENDA = [1, 48, 144];
+var T_DIST = [48, 144, 500];
+var PRODUCTOS = [
+  { id: "mechero", img: "../img/mechero.jpg", n: "Mechero", d: "Objeto cotidiano con compartimento oculto.", t: [4.50, 4.20, 3.90], dist: [3.50, 3.20, 3.00] },
+  { id: "llave", img: "../img/llave.jpg", n: "Llave de coche con fresado real", d: "Fresado real en la pieza metálica. Pieza decorativa con compartimento oculto.", t: [6.20, 5.90, 5.60], dist: [4.80, 4.50, 4.20] },
+  { id: "desodorante", img: "../img/desodorante.jpg", n: "Desodorante básico", d: "Envase de apariencia real con compartimento oculto. Surtido de marcas.", t: [6.95, 6.60, 6.25], dist: [7.00, 6.50, 6.00] },
+  { id: "sanexxl", img: "../img/sanex-xxl.jpg", n: "Desodorante Premium Sanex XXL 90 ml", tag: "XXL · 90 ml · Recomendado", d: "Formato grande de la marca Sanex, con depósito. Compartimento oculto.", t: [13.50, 12.46, 11.42], dist: [14.50, 14.00, 13.50] },
+  { id: "sanex", img: "../img/sanex.jpg", n: "Desodorante Premium Sanex 50 ml", tag: "Tamaño estándar · 50 ml", d: "Marca Sanex, detalle de realismo con depósito. Compartimento oculto.", t: [9.50, 9.19, 8.78], dist: [9.50, 9.00, 8.50] },
+  { id: "rotulador", agotado: true, img: "../img/rotulador.jpg", n: "Rotulador", d: "Escribe de verdad. Compartimento oculto.", t: [4.90, 4.50, 4.10], dist: [3.80, 3.50, 3.20] },
+  { id: "ventilador", img: "../img/ventilador.jpg", n: "Ventilador de coche", d: "Novedad difícil de encontrar. Compartimento oculto.", t: [6.50, 6.20, 5.90], dist: [4.50, 4.20, 4.00] },
+  { id: "pintalabios", agotado: true, img: "../img/pintalabios.jpg", n: "Pintalabios", d: "Barra y etiqueta reales. Compartimento oculto.", t: [5.90, 5.50, 5.10], dist: [4.60, 4.30, 4.00] },
+  { id: "vaporizador", img: "../img/vaporizador.jpg", n: "Vaporizador decorativo Premium", d: "Acabado premium. Compartimento oculto.", t: [14.00, 13.50, 13.00], dist: [12.40, 12.30, 12.20] }
+];
+var qs = new URLSearchParams(location.search);
+var DIST = false;
+var UMB = DIST ? T_DIST : T_TIENDA;
+var RANGOS = DIST ? ["48-143", "144-499", "500+"] : ["1-47", "48-143", "144+"];
+var PORTES = DIST ? 350 : 150;
+var qty = {};
+var $ = function (id) { return document.getElementById(id); };
+var fmt = function (n) { return n.toFixed(2).replace(".", ",") + " €"; };
+var pr = function (p) { return p.agotado ? null : (DIST ? p.dist : p.t); };
+function tramo(q) { var i = -1; for (var k = 0; k < UMB.length; k++) { if (q >= UMB[k]) { i = k; } } return i; }
+
+if (DIST) { $("modo").textContent = "Tarifa de distribuidor (desde 48 unidades por producto)."; }
+if (qs.get("e")) { $("email").value = qs.get("e"); }
+
+function pinta() {
+  var cont = $("productos"); cont.innerHTML = "";
+  PRODUCTOS.forEach(function (p) {
+    var precios = pr(p), div = document.createElement("div");
+    div.className = "card" + (p.agotado ? " agot" : ""); div.id = "c_" + p.id;
+    if (!precios) { div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='na'>" + (p.agotado ? "<b>Agotado temporalmente.</b> Escríbenos por WhatsApp +34 623 82 88 00 y te avisamos cuando vuelva a haber stock." : "Precio de distribuidor por confirmar. Escríbenos por WhatsApp +34 623 82 88 00.") + "</div>"; cont.appendChild(div); return; }
+    var chips = precios.map(function (v, i) { return "<span class='chip' id='t_" + p.id + "_" + i + "'>" + RANGOS[i] + " uds · " + fmt(v) + "</span>"; }).join("");
+    var rap = (DIST ? [48, 144, 500] : [12, 48, 144]).map(function (r) { return "<button type='button' data-id='" + p.id + "' data-set='" + r + "'>" + r + "</button>"; }).join("");
+    div.innerHTML = "" + (p.tag ? "<span class='tag" + (p.id === "sanexxl" ? " big" : "") + "'>" + p.tag + "</span>" : "") + "<img class='ph' src='" + p.img + "' alt='" + p.n + "' loading='lazy'><h3>" + p.n + "</h3><div class='d'>" + p.d + "</div><div class='price' id='p_" + p.id + "'>" + fmt(precios[0]) + " <small>/ud</small></div><div class='chips'>" + chips + "</div>" +
+      "<div class='qty'><button type='button' class='pm' data-id='" + p.id + "' data-d='-1' aria-label='Quitar uno'>−</button><input type='number' min='0' inputmode='numeric' id='q_" + p.id + "' value='0'><button type='button' class='pm' data-id='" + p.id + "' data-d='1' aria-label='Añadir uno'>+</button><div class='quick'>" + rap + "</div></div><div class='line' id='l_" + p.id + "'></div>";
+    cont.appendChild(div);
+  });
+}
+
+var PING = "https://shade-stash-automatizacion-n8n.jpexyl.easypanel.host/webhook/ping-web";
+function avisa(evento, detalle, importe) {
+  return;
+  try { fetch(PING, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true, body: JSON.stringify({ evento: evento, email: (qs.get("e") || $("email").value || "").trim(), detalle: detalle || "", importe: importe || 0, origen: "web" }) }).catch(function () {}); } catch (x) {}
+}
+var __pt, __ult = "";
+function avisaCarrito(sub) {
+  clearTimeout(__pt);
+  if (!(sub > 0)) { return; }
+  var det = PRODUCTOS.filter(function (p) { return (qty[p.id] || 0) > 0; }).map(function (p) { return qty[p.id] + "x " + p.id; }).join(", ");
+  __pt = setTimeout(function () { if (det !== __ult) { __ult = det; avisa("carrito_con_productos", det, sub); } }, 5000);
+}
+avisa("carrito_abierto", "", 0);
+
+function recalcula() {
+  var total = 0, n = 0, lista = "", minOk = true;
+  PRODUCTOS.forEach(function (p) {
+    var precios = pr(p); if (!precios) { return; }
+    var q = qty[p.id] || 0, i = tramo(q), card = $("c_" + p.id), linea = $("l_" + p.id);
+    for (var k = 0; k < precios.length; k++) { var ch = $("t_" + p.id + "_" + k); if (ch) { ch.className = "chip" + ((k === i && q > 0) ? " act" : ""); } }
+    $("p_" + p.id).innerHTML = fmt(i >= 0 ? precios[i] : precios[0]) + " <small>/ud</small>";
+    if (q > 0 && i >= 0) {
+      var imp = Math.round(q * precios[i] * 100) / 100; total += imp; n++;
+      card.className = "card on";
+      var sig = (i + 1 < UMB.length) ? "Con " + UMB[i + 1] + " uds baja a " + fmt(precios[i + 1]) + "/ud" : "Precio mínimo conseguido";
+      linea.textContent = "✓ " + q + " × " + fmt(precios[i]) + " = " + fmt(imp) + " · " + sig;
+      lista += "<div class='it'><div class='n'>" + q + " × " + p.n + "<small>" + fmt(precios[i]) + " por unidad</small></div><b>" + fmt(imp) + "</b><button type='button' title='Quitar' data-id='" + p.id + "' data-set='0'>×</button></div>";
+    } else if (q > 0) {
+      minOk = false; card.className = "card on"; linea.textContent = "Mínimo " + UMB[0] + " unidades en tarifa de distribuidor.";
+    } else { card.className = "card"; linea.textContent = ""; }
+  });
+  var sub = Math.round(total * 100) / 100;
+  avisaCarrito(sub);
+  var gana40 = n > 0 && sub >= 100, gana80 = n > 0 && sub >= 150;
+  var portes = (n > 0 && !gana40) ? 6.90 : 0;
+  total = Math.round((sub + portes) * 100) / 100;
+  $("lista").innerHTML = lista || "<div class='vacio'>Aún no has elegido nada. Pulsa + en un producto.</div>";
+  $("cuenta").textContent = n + (n === 1 ? " producto" : " productos");
+  var ex = "";
+  if (n > 0) {
+    ex += portes > 0 ? "<div class='extra'><span>Portes de envío</span><span>" + fmt(portes) + "</span></div>" : "<div class='extra'><span>🚚 Envío</span><span class='g'>GRATIS ✓</span></div>";
+    if (gana80) { ex += "<div class='extra'><span>🎁 2 ventiladores de coche</span><span class='g'>REGALO ✓</span></div>"; }
+    var ahorro = (gana40 ? 6.90 : 0) + (gana80 ? 13.00 : 0);
+    if (ahorro > 0) { ex += "<div class='extra'><span>Te estás ahorrando</span><span class='g'>" + fmt(ahorro) + (DIST ? "" : (gana80 ? " · 🎬" : " · 🍻")) + "</span></div>"; }
+  }
+  $("extras").innerHTML = ex;
+  $("total").textContent = fmt(total);
+  var hito = function (id, tid, ok, falta, base) { $(id).className = "hito" + (ok ? " ok" : ""); $(tid).textContent = ok ? "¡Conseguido!" : (n > 0 ? "Te faltan " + fmt(falta) : base); };
+  hito("h40", "t40", gana40, 100 - sub, "Desde 100 €");
+  hito("h80", "t80", gana80, 150 - sub, "Desde 150 €");
+  var aviso;
+  if (n === 0) { aviso = "Añade productos para empezar."; }
+  else if (!gana40) { aviso = "Te faltan " + fmt(100 - sub) + " para el envío gratis."; }
+  else if (!gana80) { aviso = "✓ Envío gratis conseguido. Te faltan " + fmt(150 - sub) + " para 2 ventiladores de regalo."; }
+  else { aviso = "✓ Envío gratis y ✓ 2 ventiladores de regalo conseguidos."; }
+  $("aviso").textContent = aviso;
+  $("meter").style.width = Math.min(100, sub / 150 * 100) + "%";
+  $("mini").textContent = n === 0 ? "" : ("🚚 " + (gana40 ? "✓" : "faltan " + fmt(100 - sub)) + "  ·  🎁 " + (gana80 ? "✓" : "faltan " + fmt(150 - sub)));
+  if (gana40 && !window.__g40) { if (DIST) { celebra("¡Envío gratis conseguido!", "", ""); } else { celebra("Brinda a nuestra salud, ¡esto se celebra! 🍻", "", "🍻🥂"); } }
+  if (gana80 && !window.__g80) { if (DIST) { celebra("¡2 ventiladores de regalo conseguidos!", "", ""); } else { celebra("Ya tienes para cine, con palomitas y bebida 🎫🍿🥤", "", "🎫🎫🍿🥤"); } }
+  window.__g40 = gana40; window.__g80 = gana80;
+  window.__t = sub; window.__n = n; window.__min = minOk;
+  valida();
+}
+
+function valida() {
+  var faltan = [];
+  [["razon", "nombre"], ["email", "email"], ["tel", "teléfono"], ["dir", "dirección"], ["cp", "código postal"], ["ciudad", "población"]].forEach(function (c) { if (!$(c[0]).value.trim()) { faltan.push(c[1]); } });
+  var conItems = window.__n > 0 && window.__t > 0 && window.__min;
+  var ok = conItems && faltan.length === 0;
+  $("enviar").disabled = !ok;
+  $("falta").textContent = !conItems ? "" : (faltan.length ? "Falta: " + faltan.join(", ") : "");
+  $("s1").className = "step" + (conItems ? " done" : " act");
+  $("s2").className = "step" + (!conItems ? "" : (faltan.length ? " act" : " done"));
+  $("s3").className = "step" + (ok ? " act" : "");
+}
+
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#cab") && window.matchMedia("(max-width:860px)").matches) { $("resumen").classList.toggle("open"); return; }
+  var b = e.target.closest("button[data-id]"); if (!b) { return; }
+  var id = b.getAttribute("data-id"), cur = qty[id] || 0;
+  cur = b.hasAttribute("data-d") ? Math.max(0, cur + parseInt(b.getAttribute("data-d"), 10)) : parseInt(b.getAttribute("data-set"), 10);
+  qty[id] = cur; $("q_" + id).value = cur; recalcula();
+});
+document.addEventListener("input", function (e) {
+  if (e.target.id && e.target.id.indexOf("q_") === 0) { var id = e.target.id.slice(2); qty[id] = Math.max(0, parseInt(e.target.value, 10) || 0); recalcula(); }
+  else { valida(); }
+});
+
+$("enviar").addEventListener("click", function () {
+  var btn = this, err = $("err"); err.textContent = "";
+  if ($("web").value) { return; }
+  var lis = PRODUCTOS.filter(function (p) { return (qty[p.id] || 0) > 0 && pr(p); });
+  var sub = 0, txt = "Hola, quiero hacer este pedido:%0A";
+  lis.forEach(function (p) { var q = qty[p.id], pu = pr(p)[tramo(q)]; sub += q * pu; txt += "- " + q + " x " + p.n + " (" + fmt(pu) + "/ud)%0A"; });
+  sub = Math.round(sub * 100) / 100;
+  var envio = sub >= 100 ? "gratis" : "6,90 €";
+  txt += "%0ASubtotal: " + fmt(sub) + " + IVA%0AEnvío: " + envio + (sub >= 150 ? "%0ARegalo: 2 ventiladores" : "");
+  txt += "%0A%0ANombre: " + $("razon").value.trim() + "%0AEmail: " + $("email").value.trim() + "%0ATeléfono: +34 " + $("tel").value.trim() + "%0ADirección: " + $("dir").value.trim() + ", " + $("cp").value.trim() + " " + $("ciudad").value.trim();
+  if ($("notas").value.trim()) { txt += "%0ANotas: " + $("notas").value.trim(); }
+  window.open("https://wa.me/" + WHATSAPP + "?text=" + txt.replace(/\n/g, "%0A").replace(/&/g, "%26").replace(/#/g, "%23"), "_blank");
+  $("form").style.display = "none"; $("ok").style.display = "block"; document.querySelector(".steps").style.display = "none"; window.scrollTo(0, 0);
+});
+
+function celebra(titulo, sub, emo) {
+  var t = $("toast"); t.innerHTML = "<b>" + titulo + "</b>" + (sub ? "<span>" + sub + "</span>" : ""); t.className = "show";
+  clearTimeout(window.__tt); window.__tt = setTimeout(function () { t.className = ""; }, 7000);
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  var c = $("confeti"), x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
+  var ps = [], t0 = Date.now(), DUR = 4200;
+  if (emo) {
+    var arr = Array.from(emo);
+    for (var i = 0; i < 26; i++) { ps.push({ a: arr[i % arr.length], x: Math.random() * innerWidth, y: -40 - Math.random() * innerHeight * .9, vy: 2.2 + Math.random() * 2.6, s: 30 + Math.random() * 26, ph: Math.random() * 6, sw: .6 + Math.random() * 1.2 }); }
+  } else {
+    var col = ["#1f7a3d", "#f5b301", "#e5484d", "#2563eb", "#9333ea", "#1a1a1a"];
+    for (var k = 0; k < 110; k++) { ps.push({ c: col[k % col.length], x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35, vx: (Math.random() - .5) * 13, vy: -Math.random() * 13 - 3, s: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .4 }); }
+  }
+  (function paso() {
+    var e = Date.now() - t0; x.clearRect(0, 0, c.width, c.height);
+    ps.forEach(function (p) {
+      if (p.a) { p.y += p.vy; p.x += Math.sin(e / 400 + p.ph) * p.sw; x.globalAlpha = e > DUR - 900 ? Math.max(0, (DUR - e) / 900) : 1; x.font = p.s + "px sans-serif"; x.fillText(p.a, p.x, p.y); }
+      else { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - e / 2200); x.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); x.restore(); }
+    });
+    if (e < DUR) { requestAnimationFrame(paso); } else { x.clearRect(0, 0, c.width, c.height); }
+  })();
+}
+
+pinta(); recalcula();
+</script>
+</body>
+</html>
